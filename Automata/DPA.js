@@ -1,8 +1,8 @@
 //@flow
-import Automata from './Automata';
+import PA from './PA';
 
 
-export default class FA extends Automata{
+export default class DPA extends PA{
     // $FlowFixMe
     constructor(...args:Array<any>) {
         super(...args);

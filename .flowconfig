@@ -1,0 +1,14 @@
+[ignore]
+./node_modules/***
+[include]
+
+[libs]
+
+[lints]
+all=error
+untyped-import=off
+unsafe-getters-setters=off
+sketchy-null-bool=off
+[options]
+
+[strict]

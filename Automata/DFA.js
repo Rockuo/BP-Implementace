@@ -1,8 +1,10 @@
+//@flow
 import FA from './FA';
 
 
 export default class DFA extends FA{
-    constructor(...args) {
+    // $FlowFixMe
+    constructor(...args:Array<any>) {
         super(...args);
     }
 }

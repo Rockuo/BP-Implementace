@@ -1,21 +1,37 @@
 import Automata from './Automata/Automata.js';
-import _ from 'lodash';
+import union from './operations/union';
+import {toPlain} from './Automata/services/plainAutomata';
+import PA from "./Automata/PA";
 
-let plain = {
-    states: [{name:'s'},{name:'f'}],
+
+let plainPA = {
+    states: [{name: 's'}, {name: 'f'}],
     alphabet: ['a'],
-    rules: [{
-        from: {name: 's'},
-        to: {name: 'f'},
-        symbol: 'a',
-    }],
-    finalStates: [{name:'f'}],
-    initialState: {name:'s'}
+    rules: [
+        {
+            from: {state: {name: 's'}, stackTop:'S' },
+            to: {state: {name: 'f'}, stackTop:'Sa'},
+            symbol: 'a',
+        },
+        {
+            from: {state: {name: 'f'}, stackTop:'a'},
+            to: {state: {name: 'f'}, stackTop:''},
+            symbol: 'a',
+        },
+        {
+            from: {state: {name: 'f'}, stackTop:'S'},
+            to: {state: {name: 'f'}, stackTop:''},
+            symbol: 'a',
+        }
+    ],
+    finalStates: [{name: 'f'}],
+    initialState: {name: 's'},
+    initialStackSymbol: 'S',
+    stackAlphabet: ['a', 'S']
 };
 
-let automata = new Automata(plain);
+let l_automata = new PA(plainPA), r_automata = new PA(plainPA);
 
-let automata2 = _.cloneDeep(automata);
+let unionAutomata = union(l_automata, r_automata, PA);
 
-console.log(automata.states.s.isInitial);
-console.log(automata2.states.s.isInitial);
+console.log(united);

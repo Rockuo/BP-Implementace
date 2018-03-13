@@ -1,15 +1,23 @@
-const _ = require('lodash');
+//@flow
+import _ from 'lodash';
+
+export type T_PlainState = { name: string }
 
 /**
  *
  * @type {Rule}
  */
 export default class State {
+
+    _name: string;
+    _isInitial: boolean;
+    _isFinal: boolean;
+
     /**
      *
      * @param {object} plainRule
      */
-    constructor({name, isInitial = false, isFinal = false}) {
+    constructor({name, isInitial = false, isFinal = false}: { name: string, isInitial: boolean, isFinal: boolean }) {
         this._name = name;
         this._isInitial = isInitial;
         this._isFinal = isFinal;
@@ -19,7 +27,7 @@ export default class State {
      *
      * @param {object} plainStates
      */
-    static createStates(plainStates) {
+    static createStates(plainStates:T_PlainState[]): { [key: string]: State } {
         let states = {};
         _.each(plainStates, plainState => {
             states[plainState.name] = new State(plainState);
@@ -28,7 +36,7 @@ export default class State {
     }
 
 
-    get name() {
+    get name():string {
         return this._name;
     }
 
@@ -40,19 +48,19 @@ export default class State {
         this._isFinal = true
     }
 
-    get isInitial() {
+    get isInitial():boolean {
         return this._isInitial;
     }
 
-    set isInitial(value) {
+    set isInitial(value:boolean) {
         this._isInitial = value;
     }
 
-    get isFinal() {
+    get isFinal():boolean {
         return this._isFinal;
     }
 
-    set isFinal(value) {
+    set isFinal(value:boolean) {
         this._isFinal = value;
     }
 };
