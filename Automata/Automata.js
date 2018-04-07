@@ -3,6 +3,7 @@ import State from './State';
 import Alphabet from './Alphabet';
 import Rule from './Rule';
 import _ from 'lodash';
+import {toPlain} from './services/plainAutomata';
 
 
 import type {T_PlainRule} from './Rule';
@@ -26,26 +27,27 @@ export type T_PlainAutomata = {
  * @property {{name:State}} finalStates
  */
 export default class Automata {
-    _states: {[key: string]:State};
-    _alphabet:Alphabet;
-    _rules:Rule[];
-    _initialState:State;
-    _finalStates:{[key: string]:State};
+    states: {[key: string]:State};
+    alphabet:Alphabet;
+    rules:Rule[];
+    initialState:State;
+    finalStates:{[key: string]:State};
 
 
     /**
-     * @param {array} states
-     * @param {array} alphabet
-     * @param {array} rules
-     * @param {object} initialState
-     * @param {array} finalStates
      */
-    constructor({states, alphabet, rules, initialState, finalStates}:T_PlainAutomata) {
-        this._states = State.createStates(states);
-        this._alphabet = new Alphabet(...alphabet);
-        this._rules = this._createRules(rules, this._states);
-        this._initialState = this._findInitialState(initialState.name);
-        this._finalStates = this._findFinalStates(finalStates);
+    constructor(settings?:T_PlainAutomata) {
+        if(settings) {
+            this._initFromPlain(settings);
+        }
+    }
+
+    _initFromPlain({states, alphabet, rules, initialState, finalStates}:T_PlainAutomata) {
+        this.states = State.createStates(states);
+        this.alphabet = new Alphabet(...alphabet);
+        this.rules = this._createRules(rules, this.states);
+        this.initialState = this._findInitialState(initialState.name);
+        this.finalStates = this._findFinalStates(finalStates);
     }
 
     /**
@@ -66,7 +68,7 @@ export default class Automata {
      * @param {string} name
      */
     _findInitialState(name:string):State {
-        return _.find(this._states, state => {
+        return _.find(this.states, state => {
             if(state.name === name) {
                 state.setAsInitial();
                 return true;
@@ -91,73 +93,55 @@ export default class Automata {
         });
     }
 
+    _findRules(from:State, symbol:string):Rule[] {
+        let rules = this.rules
+            .filter((rule:Rule) => rule.from.state.name === from.name)
+            .filter((rule:Rule) => rule.symbol === symbol);
+
+
+
+        return this.rules
+            .filter((rule:Rule) => rule.from.state.name === from.name)
+            .filter((rule:Rule) => rule.symbol === symbol);
+    }
+
+    accepts(word:string, state:State = this.initialState):boolean {
+        if(!word) {
+            return state.isFinal;
+        }
+        let symbol = word[0];
+        word = word.slice(1);
+
+        for (let rule of this._findRules(state, symbol)) {
+            let result = this.accepts(word, rule.to.state);
+            if(result) return true;
+        }
+        return false;
+    }
 
     /**
      * @param {State} state
      */
     addState(state:State) {
-        this._states[state.name] = state;
+        this.states[state.name] = state;
     }
 
     /**
      * @param {string} symbol
      */
     addSymbol(symbol:string) {
-        this._alphabet.push(symbol);
+        this.alphabet.push(symbol);
     }
 
     /**
      * @param {Rule} rule
      */
     addRule(rule:Rule) {
-        this._rules.push(rule);
+        this.rules.push(rule);
     }
 
-    get states():{[key: string]:State} {
-        return this._states;
-    }
-
-    get alphabet():Alphabet {
-        return this._alphabet;
-    }
-
-    /**
-     *
-     * @return {Rule[]}
-     */
-    get rules():Rule[] {
-        return this._rules;
-    }
-
-    get initialState():State {
-        return this._initialState;
-    }
-
-    get finalStates():{[key: string]:State} {
-        return this._finalStates;
-    }
-
-
-    set states(value:{[key: string]:State}) {
-        this._states = value;
-    }
-
-    set alphabet(value:Alphabet) {
-        this._alphabet = value;
-    }
-
-    /**
-     * @param {Rule[]} value
-     */
-    set rules(value:Rule[]) {
-        this._rules = value;
-    }
-
-    set initialState(value:State) {
-        this._initialState = value;
-    }
-
-    set finalStates(value:{[key: string]:State}) {
-        this._finalStates = value;
+    equals(automata:Automata):boolean
+    {
+        return _.isEqual(toPlain(this), toPlain(automata));
     }
 };

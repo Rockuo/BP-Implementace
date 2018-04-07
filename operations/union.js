@@ -1,11 +1,11 @@
 //@flow
 import Automata from '../Automata/Automata';
-import {toPlainLeft, toPlainRight} from '../Automata/services/plainAutomata';
+import {toPlainLeft, toPlainRight} from '../Automata/services/plainAny';
 import PA from "../Automata/PA";
 
 import type {T_PlainAutomata} from '../Automata/Automata';
 import type {T_PlainPA} from '../Automata/PA';
-import type {T_AnyPlainAutomata} from '../Automata/services/plainAutomata';
+import type {T_AnyPlainAutomata} from '../Automata/services/plainAny';
 /**
  *
  * @param  Left

@@ -13,9 +13,9 @@ type T_Rule_Constructor = { from: T_RuleNode, to: T_RuleNode, symbol: string};
  * @type {Rule}
  */
 export default class Rule {
-    _from: T_RuleNode;
-    _to: T_RuleNode;
-    _symbol: string;
+    from: T_RuleNode;
+    to: T_RuleNode;
+    symbol: string;
 
 
     /**
@@ -28,21 +28,18 @@ export default class Rule {
             from.stackTop = from.stackTop || '';
             to.stackTop = to.stackTop || '';
         }
-        this._from = from;
-        this._to = to;
-        this._symbol = symbol;
+        this.from = from;
+        this.to = to;
+        this.symbol = symbol;
     }
 
-
-    get from():T_RuleNode {
-        return this._from;
-    }
-
-    get to():T_RuleNode {
-        return this._to;
-    }
-
-    get symbol():string {
-        return this._symbol;
-    }
+    // equals(rule: Rule) {
+    //     return (
+    //         this.from.state.equals(rule.from.state) &&
+    //         this.from.stackTop === rule.from.stackTop &&
+    //         this.to.state.equals(rule.to.state) &&
+    //         this.to.stackTop === rule.to.stackTop &&
+    //         this.symbol === rule.symbol
+    //     );
+    // }
 };

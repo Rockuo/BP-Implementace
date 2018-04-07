@@ -8,6 +8,8 @@ import State from "./State";
 
 import type {T_PlainAutomata} from './Automata';
 import type {T_PlainRule} from "./Rule";
+import {toPlain} from "./services/plainAny";
+
 
 export type T_PlainPA = T_PlainAutomata & {
     initialStackSymbol: string,
@@ -16,9 +18,9 @@ export type T_PlainPA = T_PlainAutomata & {
 
 export default class PA extends Automata {
 
-    _initialStackSymbol: string;
-    _stackAlphabet: Alphabet;
-    _stack: Stack;
+    initialStackSymbol: string;
+    stackAlphabet: Alphabet;
+    stack: Stack;
 
     /**
      * @param {{
@@ -33,9 +35,9 @@ export default class PA extends Automata {
      */
     constructor(plainAutomata: T_PlainPA) {
         super(plainAutomata);
-        this._initialStackSymbol = plainAutomata.initialStackSymbol;
-        this._stackAlphabet = new Alphabet(...plainAutomata.stackAlphabet);
-        this._stack = new Stack(this._initialStackSymbol);
+        this.initialStackSymbol = plainAutomata.initialStackSymbol;
+        this.stackAlphabet = new Alphabet(...plainAutomata.stackAlphabet);
+        this.stack = new Stack(this.initialStackSymbol);
     }
 
     /**
@@ -53,27 +55,10 @@ export default class PA extends Automata {
         }, true));
     }
 
-    get initialStackSymbol(): string {
-        return this._initialStackSymbol;
-    }
 
-    set initialStackSymbol(value: string) {
-        this._initialStackSymbol = value;
-    }
+    equals(automata:Automata):boolean
+    {
 
-    get stackAlphabet(): Alphabet {
-        return this._stackAlphabet;
-    }
-
-    set stackAlphabet(value: Alphabet) {
-        this._stackAlphabet = value;
-    }
-
-    get stack(): Stack {
-        return this._stack;
-    }
-
-    set stack(value: Stack) {
-        this._stack = value;
+        return _.isEqual(toPlain(this), toPlain(automata));
     }
 }

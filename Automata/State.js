@@ -5,29 +5,29 @@ export type T_PlainState = { name: string }
 
 /**
  *
- * @type {Rule}
+ * @type {State}
  */
 export default class State {
 
-    _name: string;
-    _isInitial: boolean;
-    _isFinal: boolean;
+    name: string;
+    isInitial: boolean;
+    isFinal: boolean;
 
     /**
      *
      * @param {object} plainRule
      */
     constructor({name, isInitial = false, isFinal = false}: { name: string, isInitial: boolean, isFinal: boolean }) {
-        this._name = name;
-        this._isInitial = isInitial;
-        this._isFinal = isFinal;
+        this.name = name;
+        this.isInitial = isInitial;
+        this.isFinal = isFinal;
     }
 
     /**
      *
      * @param {object} plainStates
      */
-    static createStates(plainStates:T_PlainState[]): { [key: string]: State } {
+    static createStates(plainStates: T_PlainState[]): { [key: string]: State } {
         let states = {};
         _.each(plainStates, plainState => {
             states[plainState.name] = new State(plainState);
@@ -35,32 +35,16 @@ export default class State {
         return states;
     }
 
-
-    get name():string {
-        return this._name;
-    }
-
     setAsInitial() {
-        this._isInitial = true
+        this.isInitial = true
     }
 
     setAsFinal() {
-        this._isFinal = true
+        this.isFinal = true
     }
 
-    get isInitial():boolean {
-        return this._isInitial;
-    }
 
-    set isInitial(value:boolean) {
-        this._isInitial = value;
-    }
-
-    get isFinal():boolean {
-        return this._isFinal;
-    }
-
-    set isFinal(value:boolean) {
-        this._isFinal = value;
-    }
+    // equals(state: State) {
+    //     return this.name === state.name && this.isFinal === state.isFinal && this.isInitial && state.isInitial;
+    // }
 };

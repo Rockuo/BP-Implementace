@@ -2,7 +2,7 @@ require('babel-register');
 const runTest = require('ava');
 const Automata = require('../Automata/Automata').default;
 const PA = require('../Automata/PA').default;
-const toPlain = require('../Automata/services/plainAutomata').toPlain;
+const toPlain = require('../Automata/services/plainAny').toPlain;
 
 let plain = {
     states: [{name: 's'}, {name: 'f'}],
@@ -22,6 +22,7 @@ let plain = {
     finalStates: [{name: 'f'}],
     initialState: {name: 's'}
 };
+
 
 let plainPA = {
     states: [{name: 's'}, {name: 'f'}],
@@ -67,6 +68,7 @@ runTest('automataProcessed', test => {
     test.is(automata.initialState.name, 's');
 
     test.is(automata.rules.length, 2);
+
     test.is(automata.rules[0].from.state.name, 's');
     test.is(automata.rules[0].to.state.name, 'f');
     test.is(automata.rules[1].from.state.name, 'f');
