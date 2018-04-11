@@ -20,7 +20,7 @@ export default function intersectionFA(left: FA, right: FA): FA {
     return newAutomata;
 }
 
-function generateStates(lStates: { [key: string]: State }, rStates: { [key: string]: State }): {
+export function generateStates(lStates: { [key: string]: State }, rStates: { [key: string]: State }): {
     newStates: { [key: string]: MergedState },
     statesByLeft: { [key: string]: MergedState },
     statesByRight: { [key: string]: MergedState },

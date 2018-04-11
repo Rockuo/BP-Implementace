@@ -72,5 +72,6 @@ runTest('intesrsected', test => {
     test.true(intersecred.accepts('ab'));
     test.true(intersecred.accepts('ba'));
     test.false(intersecred.accepts('aba'));
+    test.false(intersecred.accepts('aabbab'));
     test.false(intersecred.accepts('ban'));
 });
