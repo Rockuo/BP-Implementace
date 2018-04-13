@@ -3,7 +3,7 @@ import FA from '../Automata/FA';
 import {toPlain} from "../Automata/services/plainAny";
 import type {T_AnyPlainAutomata} from "../Automata/services/plainAny";
 
-//todo: test
+
 export default function concatenation(left: FA, right: FA): FA {
     let plainLeft:T_AnyPlainAutomata = toPlain(left), plainRight:T_AnyPlainAutomata = toPlain(right);
     let rules = [];
@@ -15,14 +15,14 @@ export default function concatenation(left: FA, right: FA): FA {
         });
     }
 
-    let plainUnion = {
+    let plainConcatenation = {
         states: [...plainLeft.states, ...plainRight.states],
         alphabet: [...plainLeft.alphabet, ...plainRight.alphabet],
         rules: [...rules, ...plainLeft.rules, ...plainRight.rules],
-        finalStates: [{name: 'f'}],
+        finalStates: plainRight.finalStates,
         initialState: plainLeft.initialState
     };
 
-    return new FA(plainUnion);
+    return new FA(plainConcatenation);
 }
 

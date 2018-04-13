@@ -2,11 +2,11 @@
 require('babel-register');
 const runTest = require('ava');
 const FA = require('../Automata/FA').default;
-const shuffle = require("../operations/shuffleFA").default;
+const concatenation = require("../operations/concatenationFA").default;
 
 
 let simple1 = {
-    states: [{name: 'n0'}, {name: 'n1'}, {name: 'n2'}, {name: 'n3'}],
+    states: [{name: 'n0'}, {name: 'n1'}, {name: 'n2'}, {name: 'n3'}, {name: 'n4'}],
     alphabet: ['a', 'b'],
     rules: [
         {
@@ -17,15 +17,20 @@ let simple1 = {
         {
             from: {state: {name: 'n1'}},
             to: {state: {name: 'n2'}},
-            symbol: 'b',
+            symbol: 'a',
         },
         {
-            from: {state: {name: 'n2'}},
+            from: {state: {name: 'n0'}},
             to: {state: {name: 'n3'}},
             symbol: 'b',
         },
+        {
+            from: {state: {name: 'n3'}},
+            to: {state: {name: 'n4'}},
+            symbol: 'b',
+        },
     ],
-    finalStates: [{name: 'n3'}],
+    finalStates: [{name: 'n2'}, {name: 'n4'}],
     initialState: {name: 'n0'}
 };
 
@@ -49,21 +54,14 @@ let simple2 = {
 };
 
 
-runTest('shuffle', test => {
-    let automata = shuffle(new FA(simple1), new FA(simple2));
-    test.true(automata.accepts('cdabb'));
-    test.true(automata.accepts('cadbb'));
-    test.true(automata.accepts('cabdb'));
-    test.true(automata.accepts('cabbd'));
-    test.true(automata.accepts('acdbb'));
-    test.true(automata.accepts('acbdb'));
-    test.true(automata.accepts('acbdb'));
-    test.true(automata.accepts('abcdb'));
-    test.true(automata.accepts('abcbd'));
-    test.true(automata.accepts('abbcd'));
+runTest('simple', test => {
+    let automata = concatenation(new FA(simple1), new FA(simple2));
+    test.true(automata.accepts('aacd'));
+    test.true(automata.accepts('bbcd'));
 
-    test.false(automata.accepts('abdcd'));
-    test.false(automata.accepts('cdbab'));
-    test.false(automata.accepts('abcd'));
+    automata = concatenation(new FA(simple2), new FA(simple1));
+    test.true(automata.accepts('cdaa'));
+    test.true(automata.accepts('cdbb'));
+
 
 });

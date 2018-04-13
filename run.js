@@ -6,6 +6,7 @@ import FA from "./Automata/FA";
 import DFA from "./Automata/DFA";
 import intersectionFA from "./operations/intersectionFA";
 import insertion from "./operations/insertionFA";
+import difference from "./operations/differenceFA";
 
 
 let plainPA = {
@@ -13,18 +14,18 @@ let plainPA = {
     alphabet: ['a'],
     rules: [
         {
-            from: {state: {name: 's'}, stackTop:'S' },
-            to: {state: {name: 'f'}, stackTop:'Sa'},
+            from: {state: {name: 's'}, stackTop: 'S'},
+            to: {state: {name: 'f'}, stackTop: 'Sa'},
             symbol: 'a',
         },
         {
-            from: {state: {name: 'f'}, stackTop:'a'},
-            to: {state: {name: 'f'}, stackTop:''},
+            from: {state: {name: 'f'}, stackTop: 'a'},
+            to: {state: {name: 'f'}, stackTop: ''},
             symbol: 'a',
         },
         {
-            from: {state: {name: 'f'}, stackTop:'S'},
-            to: {state: {name: 'f'}, stackTop:''},
+            from: {state: {name: 'f'}, stackTop: 'S'},
+            to: {state: {name: 'f'}, stackTop: ''},
             symbol: 'a',
         }
     ],
@@ -38,33 +39,33 @@ let plainPA2 = {
     alphabet: ['a', 'b'],
     rules: [
         {
-            from: {state: {name: 's'}, stackTop:'S' },
-            to: {state: {name: 'f'}, stackTop:'Sa'},
+            from: {state: {name: 's'}, stackTop: 'S'},
+            to: {state: {name: 'f'}, stackTop: 'Sa'},
             symbol: 'a',
         },
         {
-            from: {state: {name: 's'}, stackTop:'S' },
-            to: {state: {name: 'f'}, stackTop:'Sa'},
+            from: {state: {name: 's'}, stackTop: 'S'},
+            to: {state: {name: 'f'}, stackTop: 'Sa'},
             symbol: 'b',
         },
         {
-            from: {state: {name: 'f'}, stackTop:'a'},
-            to: {state: {name: 'f'}, stackTop:''},
+            from: {state: {name: 'f'}, stackTop: 'a'},
+            to: {state: {name: 'f'}, stackTop: ''},
             symbol: 'a',
         },
         {
-            from: {state: {name: 'f'}, stackTop:'a'},
-            to: {state: {name: 'f'}, stackTop:''},
+            from: {state: {name: 'f'}, stackTop: 'a'},
+            to: {state: {name: 'f'}, stackTop: ''},
             symbol: 'b',
         },
         {
-            from: {state: {name: 'f'}, stackTop:'S'},
-            to: {state: {name: 'f'}, stackTop:''},
+            from: {state: {name: 'f'}, stackTop: 'S'},
+            to: {state: {name: 'f'}, stackTop: ''},
             symbol: 'a',
         },
         {
-            from: {state: {name: 'f'}, stackTop:'S'},
-            to: {state: {name: 'f'}, stackTop:''},
+            from: {state: {name: 'f'}, stackTop: 'S'},
+            to: {state: {name: 'f'}, stackTop: ''},
             symbol: 'b',
         }
     ],
@@ -179,7 +180,6 @@ let plain2 = {
 //     finalStates: [{name: 'q1'}],
 //     initialState: {name: 'q0'}
 // };
-
 let simple1 = {
     states: [{name: 'n0'}, {name: 'n1'}, {name: 'n2'}, {name: 'n3'}, {name: 'n4'}],
     alphabet: ['a', 'b'],
@@ -208,36 +208,26 @@ let simple1 = {
     finalStates: [{name: 'n2'}, {name: 'n4'}],
     initialState: {name: 'n0'}
 };
-
 let simple2 = {
-    states: [{name: 'l0'}, {name: 'l1'}, {name: 'l2'}],
-    alphabet: ['c', 'd'],
+    states: [{name: 'n0'}, {name: 'n1'}, {name: 'n2'}],
+    alphabet: ['a'],
     rules: [
         {
-            from: {state: {name: 'l0'}},
-            to: {state: {name: 'l1'}},
-            symbol: 'c',
+            from: {state: {name: 'n0'}},
+            to: {state: {name: 'n1'}},
+            symbol: 'a',
         },
         {
-            from: {state: {name: 'l1'}},
-            to: {state: {name: 'l2'}},
-            symbol: 'd',
+            from: {state: {name: 'n1'}},
+            to: {state: {name: 'n2'}},
+            symbol: 'a',
         },
     ],
-    finalStates: [{name: 'l2'}],
-    initialState: {name: 'l0'}
+    finalStates: [{name: 'n2'}],
+    initialState: {name: 'n0'}
 };
 
-let automata = insertion(new FA(simple2), new FA(simple1));
-console.log(automata.accepts('bbcd'));
 
-
-// console.log(automata.accepts('cadbb'));
-// console.log(automata.accepts('cabdb'));
-// console.log(automata.accepts('cabbd'));
-// console.log(automata.accepts('acdbb'));
-// console.log(automata.accepts('acbdb'));
-// console.log(automata.accepts('acbdb'));
-// console.log(automata.accepts('abcdb'));
-// console.log(automata.accepts('abcbd'));
-// console.log(automata.accepts('abbcd'));
+let automata = difference(new FA(simple1), new FA(simple2));
+console.log(automata.accepts('bb'));
+console.log(automata.accepts('aa'));
