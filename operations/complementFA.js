@@ -5,6 +5,7 @@ import {objectTypedValues} from "../extensions/simple";
 
 
 //todo: před tímhle musí být automat deterministický
+//todo: testy
 export default function complement(automata: FA): FA {
     let resAutomata = new FA(toPlain(automata));
     resAutomata.finalStates = {};
