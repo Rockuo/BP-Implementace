@@ -1,4 +1,4 @@
-import Automata from './Automata/Automata.js';
+import Alphabet from './Automata/Alphabet.js';
 import prefixes from './operations/prefixesFA';
 import {toPlain} from './Automata/services/plainAutomata';
 import PA from "./Automata/PA";
@@ -6,7 +6,8 @@ import FA from "./Automata/FA";
 import DFA from "./Automata/DFA";
 import intersectionFA from "./operations/intersectionFA";
 import insertion from "./operations/insertionFA";
-import difference from "./operations/differenceFA";
+import reverse from "./operations/reverseFA";
+import fullAlphabetDeletion from "./operations/fullAlphabetDeletionFA";
 
 
 let plainPA = {
@@ -228,6 +229,32 @@ let simple2 = {
 };
 
 
-let automata = difference(new FA(simple1), new FA(simple2));
-console.log(automata.accepts('bb'));
-console.log(automata.accepts('aa'));
+let plain3 = {
+    states: [{name: 'q0'}, {name: 'q1'}],
+    alphabet: ['a', 'b', 'c'],
+    rules: [
+        {
+            from: {state: {name: 'q0'}},
+            to: {state: {name: 'q0'}},
+            symbol: 'b',
+        },
+        {
+            from: {state: {name: 'q0'}},
+            to: {state: {name: 'q1'}},
+            symbol: 'a',
+        },
+        {
+            from: {state: {name: 'q1'}},
+            to: {state: {name: 'q1'}},
+            symbol: 'c',
+        },
+    ],
+    finalStates: [{name: 'q1'}],
+    initialState: {name: 'q0'}
+};
+
+
+
+    let automata = fullAlphabetDeletion(new FA(plain3), new Alphabet(...['b']));
+    console.log(automata.accepts('c'));
+

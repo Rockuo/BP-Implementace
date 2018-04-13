@@ -152,19 +152,26 @@ export default class Automata {
 
     _findRules(from: State, symbol: string): Rule[] {
         // let rules = this.rules
+        //     .filter((rule: Rule) => !(this._ignoreRules[rule.from.state.name] && this._ignoreRules[rule.from.state.name] === rule.symbol))
         //     .filter((rule:Rule) => rule.from.state.name === from.name)
         //     .filter((rule:Rule) => rule.symbol === symbol);
         //
-        //
+        // for (let rule of this.rules) {
+        //     let a =!(!!this._ignoreRules[rule.from.state.name] && this._ignoreRules[rule.from.state.name] === rule.symbol);
+        //     let e = rule.from.state.name;
+        //     let c = this._ignoreRules[rule.from.state.name] === rule.symbol;
+        //     let b = !!this._ignoreRules[rule.from.state.name];
+        //     let d =!(this._ignoreRules[rule.from.state.name] && this._ignoreRules[rule.from.state.name] === rule.symbol);
+        // }
 
         return this.rules
-            .filter((rule: Rule) => !(this._ignoreRules[rule.to.state.name] && this._ignoreRules[rule.to.state.name] === rule.symbol))
+            .filter((rule: Rule) => !(this._ignoreRules[rule.from.state.name] === rule.symbol))
             .filter((rule: Rule) => rule.from.state.name === from.name)
             .filter((rule: Rule) => rule.symbol === symbol);
     }
 
-    accepts(word: string, state: State = this.initialState): boolean {
-        if(state === this.initialState) {
+    accepts(word: string, state: State = this.initialState, initialCall = true): boolean {
+        if(initialCall) {
             this._ignoreRules = {};
             // this.debugRoute=[];
         }
@@ -183,7 +190,7 @@ export default class Automata {
         for (let rule of this._findRules(state, symbol)) {
             let ignoreBackup = this._ignoreRules;
             this._ignoreRules = {};
-            let result = this.accepts(word, rule.to.state);
+            let result = this.accepts(word, rule.to.state, false);
             this._ignoreRules = ignoreBackup;
             if (result) {
                 // this.debugRoute.push({from:rule.from.state.name, symbol:rule.symbol, to:rule.to.state.name});
@@ -193,8 +200,10 @@ export default class Automata {
 
         word = symbol + word;
         for (let rule of this._findRules(state, '')) {
-            this._ignoreRules[rule.from.state.name] = rule.symbol;
-            let result = this.accepts(word, rule.to.state);
+            let ignoreBackup = this._ignoreRules;
+            this._ignoreRules[rule.from.state.name] = '';
+            let result = this.accepts(word, rule.to.state, false);
+            this._ignoreRules = ignoreBackup;
             if (result) return true;
         }
 
