@@ -6,6 +6,7 @@ import {generateStates} from "./intersectionFA";
 import Rule from "../Automata/Rule";
 import Automata from "../Automata/Automata";
 import Alphabet from "../Automata/Alphabet";
+import {objectTypedValues} from "../extensions/simple";
 
 // {
 //     states: [{name: 'q0'}, {name: 'q1'}, {name: 'q2'}],
@@ -58,7 +59,7 @@ export default function shuffle(left: FA, right: FA): ?FA {
 
 function createRules(left: FA, right: FA, newStates:{ [key: string]: MergedState }): Rule[] {
     let newRules = [];
-    for (let newState:MergedState of Object.values(newStates)) {
+    for (let newState:MergedState of objectTypedValues(newStates,MergedState)) {
         let leftRules = left.rules.filter((rule:Rule) => rule.from.state.name === newState.oldLeft.name);
         for (let rule:Rule of leftRules) {
             newRules.push(new Rule({

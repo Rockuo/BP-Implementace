@@ -5,6 +5,7 @@ import Alphabet from '../Automata/Alphabet';
 import MergedState from '../Automata/MergedState';
 import _ from 'lodash';
 import Rule from "../Automata/Rule";
+import {objectTypedValues} from "../extensions/simple";
 
 export default function intersectionFA(left: FA, right: FA): FA {
     let {newStates, newFinals, newInitial} = generateStates(left.states, right.states),
@@ -46,9 +47,9 @@ function generateRules(left: FA, right: FA, newStates:{ [key: string]: MergedSta
     let newRules = [];
 
 
-    let newStatesArr = (Object.values(newStates): MergedState[]);
+    let newStatesArr = (objectTypedValues(newStates): MergedState[]);
 
-    for (let state of Object.values(left.states)) {
+    for (let state of objectTypedValues(left.states)) {
         let fromStates = newStatesArr.filter((mState:MergedState)=> state.name === mState.oldLeft.name),
             lStateRules = lRules.filter((rule:Rule) => rule.from.state.name === state.name);
 

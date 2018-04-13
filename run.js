@@ -5,7 +5,7 @@ import PA from "./Automata/PA";
 import FA from "./Automata/FA";
 import DFA from "./Automata/DFA";
 import intersectionFA from "./operations/intersectionFA";
-import shuffle from "./operations/shuffleFA";
+import insertion from "./operations/insertionFA";
 
 
 let plainPA = {
@@ -181,7 +181,7 @@ let plain2 = {
 // };
 
 let simple1 = {
-    states: [{name: 'n0'}, {name: 'n1'}, {name: 'n2'}, {name: 'n3'}],
+    states: [{name: 'n0'}, {name: 'n1'}, {name: 'n2'}, {name: 'n3'}, {name: 'n4'}],
     alphabet: ['a', 'b'],
     rules: [
         {
@@ -192,15 +192,20 @@ let simple1 = {
         {
             from: {state: {name: 'n1'}},
             to: {state: {name: 'n2'}},
-            symbol: 'b',
+            symbol: 'a',
         },
         {
-            from: {state: {name: 'n2'}},
+            from: {state: {name: 'n0'}},
             to: {state: {name: 'n3'}},
             symbol: 'b',
         },
+        {
+            from: {state: {name: 'n3'}},
+            to: {state: {name: 'n4'}},
+            symbol: 'b',
+        },
     ],
-    finalStates: [{name: 'n3'}],
+    finalStates: [{name: 'n2'}, {name: 'n4'}],
     initialState: {name: 'n0'}
 };
 
@@ -223,11 +228,8 @@ let simple2 = {
     initialState: {name: 'l0'}
 };
 
-
-
-let automata = shuffle(new FA(plain2),new FA(plain1));
-console.log(automata.accepts('ba'));
-console.log(automata.debugRoute);
+let automata = insertion(new FA(simple2), new FA(simple1));
+console.log(automata.accepts('bbcd'));
 
 
 // console.log(automata.accepts('cadbb'));

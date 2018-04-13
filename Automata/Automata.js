@@ -8,6 +8,7 @@ import {toPlain} from './services/plainAutomata';
 
 import type {T_PlainRule} from './Rule';
 import type {T_PlainState} from './State';
+import {objectTypedValues} from "../extensions/simple";
 
 
 export type T_PlainAutomata = {
@@ -79,6 +80,22 @@ export default class Automata {
     }
 
     /**
+     * Vynutí, aby byl pouze jeden konečný stav
+     */
+    forceOneFinalState() {
+        let newFinalState = new State({
+            name: 'F-'+objectTypedValues(this.finalStates,State).map((state:State) => state.name).join('-'),
+            isFinal:true
+        });
+        for (let state of objectTypedValues(this.finalStates,State)) {
+            state.isFinal = false;
+            this.rules.push(new Rule({from: {state}, to: {state:newFinalState}, symbol: ''}))
+        }
+        this.finalStates = {[newFinalState.name]:newFinalState};
+        this.states[newFinalState.name] = newFinalState;
+    }
+
+    /**,
      * @param {array} finalStates
      * @returns {object}
      * @private
@@ -99,13 +116,13 @@ export default class Automata {
      */
     removeUselessStatesAndRules() {
         this.states = {};
-        this._removeUselessStates(Object.values(this.finalStates));
+        this._removeUselessStates(objectTypedValues(this.finalStates));
         this._removeUselessRules();
     }
 
     _removeUselessRules() {
         let newRules = [];
-        let states = Object.values(this.states);
+        let states = objectTypedValues(this.states);
         for (let rule of this.rules) {
             if (
                 states.filter(state => rule.from.state.name === state.name).length > 0 &&
@@ -149,7 +166,7 @@ export default class Automata {
     accepts(word: string, state: State = this.initialState): boolean {
         if(state === this.initialState) {
             this._ignoreRules = {};
-            this.debugRoute=[];
+            // this.debugRoute=[];
         }
 
 
@@ -169,7 +186,7 @@ export default class Automata {
             let result = this.accepts(word, rule.to.state);
             this._ignoreRules = ignoreBackup;
             if (result) {
-                this.debugRoute.push({from:rule.from.state.name, symbol:rule.symbol, to:rule.to.state.name});
+                // this.debugRoute.push({from:rule.from.state.name, symbol:rule.symbol, to:rule.to.state.name});
                 return true
             }
         }

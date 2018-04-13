@@ -17,7 +17,7 @@ export default class State {
      *
      * @param {object} plainRule
      */
-    constructor({name, isInitial = false, isFinal = false}: { name: string, isInitial: boolean, isFinal: boolean }) {
+    constructor({name, isInitial = false, isFinal = false}: { name: string, isInitial?: boolean, isFinal?: boolean }) {
         this.name = name;
         this.isInitial = isInitial;
         this.isFinal = isFinal;
