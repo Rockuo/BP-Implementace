@@ -1,13 +1,13 @@
-import Alphabet from './Automata/Alphabet.js';
-import prefixes from './operations/prefixesFA';
-import {toPlain} from './Automata/services/plainAutomata';
-import PA from "./Automata/PA";
-import FA from "./Automata/FA";
-import DFA from "./Automata/DFA";
-import intersectionFA from "./operations/intersectionFA";
-import insertion from "./operations/insertionFA";
-import reverse from "./operations/reverseFA";
-import fullAlphabetDeletion from "./operations/fullAlphabetDeletionFA";
+import Alphabet from './src/Automata/Alphabet.js';
+import prefixes from './src/operations/prefixesFA';
+import {toPlain} from './src/Automata/services/plainAutomata';
+import PA from "./src/Automata/PA/PA";
+import FA from "./src/Automata/FA/FA";
+import DFA from "./src/Automata/FA/DFA";
+import intersectionFA from "./src/operations/intersectionFA";
+import insertion from "./src/operations/insertionFA";
+import reverse from "./src/operations/reverseFA";
+import fullAlphabetDeletion from "./src/operations/fullAlphabetDeletionFA";
 
 
 let plainPA = {

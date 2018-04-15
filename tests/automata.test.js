@@ -1,8 +1,8 @@
 require('babel-register');
 const runTest = require('ava');
-const Automata = require('../Automata/Automata').default;
-const PA = require('../Automata/PA').default;
-const toPlain = require('../Automata/services/plainAny').toPlain;
+const Automata = require('../src/Automata/Automata').default;
+const PA = require('../src/Automata/PA/PA').default;
+const toPlain = require('../src/Automata/services/plainAny').toPlain;
 
 let plain = {
     states: [{name: 's'}, {name: 'f'}],

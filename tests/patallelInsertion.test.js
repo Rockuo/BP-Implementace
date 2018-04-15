@@ -1,8 +1,8 @@
 
 require('babel-register');
 const runTest = require('ava');
-const FA = require('../Automata/FA').default;
-const parallelInsertion = require("../operations/parallelInsertionFA").default;
+const FA = require('../src/Automata/FA/FA').default;
+const parallelInsertion = require("../src/operations/parallelInsertionFA").default;
 
 let simple1 = {
     states: [{name: 'n0'}, {name: 'n1'}, {name: 'n2'}, {name: 'n3'}, {name: 'n4'}],

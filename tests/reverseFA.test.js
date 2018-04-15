@@ -1,8 +1,8 @@
 
 require('babel-register');
 const runTest = require('ava');
-const FA = require('../Automata/FA').default;
-const reverse = require("../operations/reverseFA").default;
+const FA = require('../src/Automata/FA/FA').default;
+const reverse = require("../src/operations/reverseFA").default;
 
 let plain1 = {
     states: [{name: 'q0'}, {name: 'q1'}],

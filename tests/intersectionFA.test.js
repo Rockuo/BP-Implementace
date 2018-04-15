@@ -1,8 +1,8 @@
 
 require('babel-register');
 const runTest = require('ava');
-const FA = require('../Automata/FA').default;
-const intersectionFA = require("../operations/intersectionFA").default;
+const FA = require('../src/Automata/FA/FA').default;
+const intersectionFA = require("../src/operations/intersectionFA").default;
 
 let plain1 = {
     states: [{name: 'q0'}, {name: 'q1'}, {name: 'q2'}],

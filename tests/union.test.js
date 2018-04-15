@@ -1,9 +1,9 @@
 require('babel-register');
 const runTest = require('ava');
-const Automata = require('../Automata/Automata').default;
-const PA = require('../Automata/PA').default;
-const union = require('../operations/union').default;
-const State = require("../Automata/State").default;
+const Automata = require('../src/Automata/Automata').default;
+const PA = require('../src/Automata/PA/PA').default;
+const union = require('../src/operations/union').default;
+const State = require("../src/Automata/State/State").default;
 
 
 let plain = {
