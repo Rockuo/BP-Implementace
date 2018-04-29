@@ -15,13 +15,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
- *
  * @type {State}
+ * @property {string} name
+ * @property {boolean} isInitial
+ * @property {boolean} isFinal
  */
 var State = function () {
 
     /**
-     *
      * @param {object} plainRule
      */
     function State(_ref) {
@@ -39,7 +40,6 @@ var State = function () {
     }
 
     /**
-     *
      * @param {object} plainStates
      */
 
@@ -55,10 +55,17 @@ var State = function () {
             this.isFinal = true;
         }
 
-        // equals(state: State) {
-        //     return this.name === state.name && this.isFinal === state.isFinal && this.isInitial && state.isInitial;
-        // }
+        /**
+         * Vrací náhodné jméno stavu s prefixem
+         * @param {string} prefix
+         * @return {string}
+         */
 
+    }, {
+        key: 'equals',
+        value: function equals(state) {
+            return this.name === state.name;
+        }
     }], [{
         key: 'createStates',
         value: function createStates(plainStates) {
@@ -67,6 +74,13 @@ var State = function () {
                 states[plainState.name] = new State(plainState);
             });
             return states;
+        }
+    }, {
+        key: 'randomName',
+        value: function randomName() {
+            var prefix = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+            return prefix + Math.random().toString(36).substring(2, 4) + Math.random().toString(36).substring(2, 4);
         }
     }]);
 

@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -24,9 +24,9 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _plainAutomata = require('./services/plainAutomata');
+var _object = require('./services/object');
 
-var _simple = require('../extensions/simple');
+var _exceptions = require('./exceptions');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -37,13 +37,18 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
- *
+ * @abstract
  * @type {Automata}
  * @property {{name:State}} states
  * @property {string[]} alphabet
  * @property {Rule[]} rules
  * @property {State} initialState
  * @property {{name:State}} finalStates
+ */
+
+
+/**
+ * Datový typ pro čistý automat
  */
 var Automata = function () {
 
@@ -52,6 +57,9 @@ var Automata = function () {
     function Automata(settings) {
         _classCallCheck(this, Automata);
 
+        if (this.constructor.name === 'Automata') {
+            throw new _exceptions.AbstractClassException(this.constructor.name);
+        }
         if (settings) {
             this._initFromPlain(settings);
         }
@@ -99,7 +107,7 @@ var Automata = function () {
     }, {
         key: '_findInitialState',
         value: function _findInitialState(name) {
-            return (0, _simple.objectTypedValues)(this.states, _State2.default).find(function (state) {
+            return (0, _object.objectValues)(this.states).find(function (state) {
                 if (state.name === name) {
                     state.setAsInitial();
                     return true;
@@ -116,7 +124,7 @@ var Automata = function () {
         key: 'forceOneFinalState',
         value: function forceOneFinalState() {
             var newFinalState = new _State2.default({
-                name: 'F-' + (0, _simple.objectTypedValues)(this.finalStates, _State2.default).map(function (state) {
+                name: 'F-' + (0, _object.objectValues)(this.finalStates).map(function (state) {
                     return state.name;
                 }).join('-'),
                 isFinal: true
@@ -126,7 +134,7 @@ var Automata = function () {
             var _iteratorError = undefined;
 
             try {
-                for (var _iterator = (0, _simple.objectTypedValues)(this.finalStates, _State2.default)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                for (var _iterator = (0, _object.objectValues)(this.finalStates)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                     var state = _step.value;
 
                     state.isFinal = false;
@@ -173,40 +181,27 @@ var Automata = function () {
         }
 
         /**
-         * Smaže neukončující stavy(a přechody k nim)
+         * Odstraní nedostupné stavy
          */
 
     }, {
-        key: 'removeUselessStatesAndRules',
-        value: function removeUselessStatesAndRules() {
-            this.states = {};
-            this._removeUselessStates((0, _simple.objectTypedValues)(this.finalStates));
-            this._removeUselessRules();
-        }
-    }, {
-        key: '_removeUselessRules',
-        value: function _removeUselessRules() {
-            var newRules = [];
-            var states = (0, _simple.objectTypedValues)(this.states);
+        key: 'removeUnreachableStates',
+        value: function removeUnreachableStates() {
+            this.states = _defineProperty({}, this.initialState.name, this.initialState);
+            this._ignoreRules = {};
+            this._removeUnreachableStates([this.initialState]);
+            this._removeUnattachedRules();
             var _iteratorNormalCompletion2 = true;
             var _didIteratorError2 = false;
             var _iteratorError2 = undefined;
 
             try {
-                var _loop = function _loop() {
-                    var rule = _step2.value;
+                for (var _iterator2 = (0, _object.objectValues)(this.finalStates)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var fState = _step2.value;
 
-                    if (states.filter(function (state) {
-                        return rule.from.state.name === state.name;
-                    }).length > 0 && states.filter(function (state) {
-                        return rule.to.state.name === state.name;
-                    }).length > 0) {
-                        newRules.push(rule);
+                    if (!this.states[fState.name]) {
+                        delete this.finalStates[fState.name];
                     }
-                };
-
-                for (var _iterator2 = this.rules[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                    _loop();
                 }
             } catch (err) {
                 _didIteratorError2 = true;
@@ -222,41 +217,45 @@ var Automata = function () {
                     }
                 }
             }
+        }
 
-            this.rules = newRules;
+        /**
+         * Smaže neukončující stavy(a přechody k nim)
+         */
+
+    }, {
+        key: 'removeTrapStates',
+        value: function removeTrapStates() {
+            this.states = _extends({}, this.finalStates);
+            this._ignoreRules = {};
+            this._removeTrapStates((0, _object.objectValues)(this.finalStates));
+            this._removeUnattachedRules();
+            this.states[this.initialState.name] = this.initialState;
         }
     }, {
-        key: '_removeUselessStates',
-        value: function _removeUselessStates(useful) {
-            var _this = this;
-
+        key: '_removeUnattachedRules',
+        value: function _removeUnattachedRules() {
+            var newRules = [];
+            var states = (0, _object.objectValues)(this.states);
             var _iteratorNormalCompletion3 = true;
             var _didIteratorError3 = false;
             var _iteratorError3 = undefined;
 
             try {
-                var _loop2 = function _loop2() {
-                    var finalState = _step3.value;
+                var _loop = function _loop() {
+                    var rule = _step3.value;
 
-                    var newUseful = _this.rules.filter(function (rule) {
-                        return rule.to.state.name === finalState.name && !_this.states[rule.from.state.name];
-                    }).map(function (rule) {
-                        var state = rule.from.state;
-                        _this.states[state.name] = state;
-                        return state;
-                    });
-
-                    if (!newUseful.length) return {
-                            v: void 0
-                        };
-
-                    _this._removeUselessStates(newUseful);
+                    if (states.filter(function (state) {
+                        return rule.from.state.name === state.name;
+                    }).length > 0 && states.filter(function (state) {
+                        return rule.to.state.name === state.name;
+                    }).length > 0) {
+                        newRules.push(rule);
+                    }
                 };
 
-                for (var _iterator3 = useful[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                    var _ret2 = _loop2();
-
-                    if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
+                for (var _iterator3 = this.rules[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                    _loop();
                 }
             } catch (err) {
                 _didIteratorError3 = true;
@@ -272,92 +271,82 @@ var Automata = function () {
                     }
                 }
             }
+
+            this.rules = newRules;
         }
     }, {
-        key: '_findRules',
-        value: function _findRules(from, symbol) {
-            var _this2 = this;
+        key: '_removeUnreachableStates',
+        value: function _removeUnreachableStates() {
+            var _this = this;
 
-            // let rules = this.rules
-            //     .filter((rule: Rule) => !(this._ignoreRules[rule.from.state.name] && this._ignoreRules[rule.from.state.name] === rule.symbol))
-            //     .filter((rule:Rule) => rule.from.state.name === from.name)
-            //     .filter((rule:Rule) => rule.symbol === symbol);
-            //
-            // for (let rule of this.rules) {
-            //     let a =!(!!this._ignoreRules[rule.from.state.name] && this._ignoreRules[rule.from.state.name] === rule.symbol);
-            //     let e = rule.from.state.name;
-            //     let c = this._ignoreRules[rule.from.state.name] === rule.symbol;
-            //     let b = !!this._ignoreRules[rule.from.state.name];
-            //     let d =!(this._ignoreRules[rule.from.state.name] && this._ignoreRules[rule.from.state.name] === rule.symbol);
-            // }
+            var reachables = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [this.initialState];
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
 
-            return this.rules.filter(function (rule) {
-                return !(_this2._ignoreRules[rule.from.state.name] === rule.symbol);
-            }).filter(function (rule) {
-                return rule.from.state.name === from.name;
-            }).filter(function (rule) {
-                return rule.symbol === symbol;
-            });
-        }
-    }, {
-        key: 'accepts',
-        value: function accepts(word) {
-            var state = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.initialState;
-            var initialCall = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+            try {
+                var _loop2 = function _loop2() {
+                    var reachable = _step4.value;
 
-            if (initialCall) {
-                this._ignoreRules = {};
-                // this.debugRoute=[];
-            }
+                    var newReachable = _this.rules.filter(function (rule) {
+                        return rule.from.state.equals(reachable) && !_this.states[rule.to.state.name];
+                    }).map(function (rule) {
+                        var state = rule.to.state;
+                        _this.states[state.name] = state;
+                        return state;
+                    });
 
-            if (!word) {
-                if (state.isFinal) return true;
-                var _iteratorNormalCompletion4 = true;
-                var _didIteratorError4 = false;
-                var _iteratorError4 = undefined;
-
-                try {
-                    for (var _iterator4 = this._findRules(state, '')[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                        var _rule = _step4.value;
-
-                        if (_rule.to.state.isFinal) return true;
+                    if (newReachable.length) {
+                        _this._removeUnreachableStates(newReachable);
                     }
-                } catch (err) {
-                    _didIteratorError4 = true;
-                    _iteratorError4 = err;
+                };
+
+                for (var _iterator4 = reachables[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    _loop2();
+                }
+            } catch (err) {
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                        _iterator4.return();
+                    }
                 } finally {
-                    try {
-                        if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                            _iterator4.return();
-                        }
-                    } finally {
-                        if (_didIteratorError4) {
-                            throw _iteratorError4;
-                        }
+                    if (_didIteratorError4) {
+                        throw _iteratorError4;
                     }
                 }
-
-                return false;
             }
-            var symbol = word[0];
-            word = word.slice(1);
+        }
+    }, {
+        key: '_removeTrapStates',
+        value: function _removeTrapStates(useful) {
+            var _this2 = this;
 
             var _iteratorNormalCompletion5 = true;
             var _didIteratorError5 = false;
             var _iteratorError5 = undefined;
 
             try {
-                for (var _iterator5 = this._findRules(state, symbol)[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                    var _rule2 = _step5.value;
+                var _loop3 = function _loop3() {
+                    var finalState = _step5.value;
 
-                    var ignoreBackup = this._ignoreRules;
-                    this._ignoreRules = {};
-                    var result = this.accepts(word, _rule2.to.state, false);
-                    this._ignoreRules = ignoreBackup;
-                    if (result) {
-                        // this.debugRoute.push({from:rule.from.state.name, symbol:rule.symbol, to:rule.to.state.name});
-                        return true;
+                    var newUseful = _this2.rules.filter(function (rule) {
+                        return rule.to.state.name === finalState.name && !_this2.states[rule.from.state.name];
+                    }).map(function (rule) {
+                        var state = rule.from.state;
+                        _this2.states[state.name] = state;
+                        return state;
+                    });
+
+                    if (newUseful.length) {
+                        _this2._removeTrapStates(newUseful);
                     }
+                };
+
+                for (var _iterator5 = useful[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                    _loop3();
                 }
             } catch (err) {
                 _didIteratorError5 = true;
@@ -373,21 +362,72 @@ var Automata = function () {
                     }
                 }
             }
+        }
+    }, {
+        key: '_findRules',
+        value: function _findRules(from) {
+            var _this3 = this;
 
-            word = symbol + word;
+            var symbol = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+
+            return this.rules.filter(function (rule) {
+                return !(_this3._ignoreRules[rule.from.state.name] === rule.symbol);
+            }).filter(function (rule) {
+                return rule.from.state.name === from.name;
+            }).filter(function (rule) {
+                return symbol === undefined || rule.symbol === symbol;
+            });
+        }
+
+        /**
+         * ajistí právě jeden uklízecí stav
+         */
+
+    }, {
+        key: 'ensureOneTrapState',
+        value: function ensureOneTrapState() {
+            this.removeTrapStates();
+            var cleanState = new _State2.default({
+                name: 'clean(id_' + _State2.default.randomName() + ')'
+            });
+            this.states[cleanState.name] = cleanState;
             var _iteratorNormalCompletion6 = true;
             var _didIteratorError6 = false;
             var _iteratorError6 = undefined;
 
             try {
-                for (var _iterator6 = this._findRules(state, '')[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-                    var _rule3 = _step6.value;
+                for (var _iterator6 = (0, _object.objectValues)(this.states)[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                    var state = _step6.value;
 
-                    var _ignoreBackup = this._ignoreRules;
-                    this._ignoreRules[_rule3.from.state.name] = '';
-                    var _result = this.accepts(word, _rule3.to.state, false);
-                    this._ignoreRules = _ignoreBackup;
-                    if (_result) return true;
+                    var existingSymbols = this._findRules(state).map(function (rule) {
+                        return rule.symbol;
+                    });
+                    var _iteratorNormalCompletion8 = true;
+                    var _didIteratorError8 = false;
+                    var _iteratorError8 = undefined;
+
+                    try {
+                        for (var _iterator8 = this.alphabet[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                            var symbol = _step8.value;
+
+                            if (existingSymbols.indexOf(symbol) < 0) {
+                                this.rules.push(new _Rule2.default({ from: { state: state }, to: { state: cleanState }, symbol: symbol }));
+                            }
+                        }
+                    } catch (err) {
+                        _didIteratorError8 = true;
+                        _iteratorError8 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion8 && _iterator8.return) {
+                                _iterator8.return();
+                            }
+                        } finally {
+                            if (_didIteratorError8) {
+                                throw _iteratorError8;
+                            }
+                        }
+                    }
                 }
             } catch (err) {
                 _didIteratorError6 = true;
@@ -404,7 +444,141 @@ var Automata = function () {
                 }
             }
 
-            return false;
+            var _iteratorNormalCompletion7 = true;
+            var _didIteratorError7 = false;
+            var _iteratorError7 = undefined;
+
+            try {
+                for (var _iterator7 = this.alphabet[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                    var _symbol = _step7.value;
+
+                    this.rules.push(new _Rule2.default({ from: { state: cleanState }, to: { state: cleanState }, symbol: _symbol }));
+                }
+            } catch (err) {
+                _didIteratorError7 = true;
+                _iteratorError7 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion7 && _iterator7.return) {
+                        _iterator7.return();
+                    }
+                } finally {
+                    if (_didIteratorError7) {
+                        throw _iteratorError7;
+                    }
+                }
+            }
+        }
+    }, {
+        key: '_followEmptyRules',
+        value: function _followEmptyRules(state) {
+            var _this4 = this;
+
+            var found = void 0;
+            do {
+                var emptyRules = this._findRules(state, '');
+                found = !!emptyRules.length;
+                var _iteratorNormalCompletion9 = true;
+                var _didIteratorError9 = false;
+                var _iteratorError9 = undefined;
+
+                try {
+                    var _loop4 = function _loop4() {
+                        var emptyRule = _step9.value;
+
+                        _lodash2.default.remove(_this4.rules, function (rule) {
+                            return rule.equals(emptyRule);
+                        });
+                        var nextStateRules = _this4._findRules(emptyRule.to.state);
+                        var _iteratorNormalCompletion10 = true;
+                        var _didIteratorError10 = false;
+                        var _iteratorError10 = undefined;
+
+                        try {
+                            for (var _iterator10 = nextStateRules[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+                                var nextStateRule = _step10.value;
+
+                                _this4.rules.push(new _Rule2.default({
+                                    from: { state: state },
+                                    symbol: nextStateRule.symbol,
+                                    to: nextStateRule.to
+                                }));
+                            }
+                        } catch (err) {
+                            _didIteratorError10 = true;
+                            _iteratorError10 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion10 && _iterator10.return) {
+                                    _iterator10.return();
+                                }
+                            } finally {
+                                if (_didIteratorError10) {
+                                    throw _iteratorError10;
+                                }
+                            }
+                        }
+
+                        if (emptyRule.to.state.isFinal) {
+                            state.isFinal = true;
+                        }
+                    };
+
+                    for (var _iterator9 = emptyRules[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+                        _loop4();
+                    }
+                } catch (err) {
+                    _didIteratorError9 = true;
+                    _iteratorError9 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion9 && _iterator9.return) {
+                            _iterator9.return();
+                        }
+                    } finally {
+                        if (_didIteratorError9) {
+                            throw _iteratorError9;
+                        }
+                    }
+                }
+            } while (found);
+        }
+
+        /**
+         * Odstraní sigma pravidla
+         */
+
+    }, {
+        key: 'removeEmptyRules',
+        value: function removeEmptyRules() {
+            //vyčstíme si ignore rules (jen pro jistotu)
+            this._ignoreRules = {};
+            var _iteratorNormalCompletion11 = true;
+            var _didIteratorError11 = false;
+            var _iteratorError11 = undefined;
+
+            try {
+                for (var _iterator11 = (0, _object.objectValues)(this.states)[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+                    var state = _step11.value;
+
+                    this._followEmptyRules(state);
+                }
+            } catch (err) {
+                _didIteratorError11 = true;
+                _iteratorError11 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion11 && _iterator11.return) {
+                        _iterator11.return();
+                    }
+                } finally {
+                    if (_didIteratorError11) {
+                        throw _iteratorError11;
+                    }
+                }
+            }
+
+            this.removeUnreachableStates();
         }
 
         /**
@@ -435,11 +609,6 @@ var Automata = function () {
         key: 'addRule',
         value: function addRule(rule) {
             this.rules.push(rule);
-        }
-    }, {
-        key: 'equals',
-        value: function equals(automata) {
-            return _lodash2.default.isEqual((0, _plainAutomata.toPlain)(this), (0, _plainAutomata.toPlain)(automata));
         }
     }]);
 

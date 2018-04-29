@@ -1,8 +1,6 @@
-
-require('babel-register');
 const runTest = require('ava');
-const FA = require('../src/Automata/FA/FA').default;
-const shuffle = require("../src/operations/shuffleFA").default;
+const FA = require('../dist/Automata/FA/FA').default;
+const shuffle = require("../dist/operations/shuffleFA").default;
 
 
 let simple1 = {

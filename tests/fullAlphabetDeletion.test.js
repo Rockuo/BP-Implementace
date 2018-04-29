@@ -1,9 +1,7 @@
-
-require('babel-register');
 const runTest = require('ava');
-const FA = require('../src/Automata/FA/FA').default;
-const fullAlphabetDeletion = require("../src/operations/fullAlphabetDeletionFA").default;
-const Alphabet = require("../src/Automata/Alphabet").default;
+const FA = require('../dist/Automata/FA/FA').default;
+const fullAlphabetDeletion = require("../dist/operations/fullAlphabetDeletionFA").default;
+const Alphabet = require("../dist/Automata/Alphabet").default;
 
 
 let plain1 = {

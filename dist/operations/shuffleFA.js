@@ -9,10 +9,6 @@ var _FA = require("../Automata/FA/FA");
 
 var _FA2 = _interopRequireDefault(_FA);
 
-var _State = require("../Automata/State/State");
-
-var _State2 = _interopRequireDefault(_State);
-
 var _MergedState = require("../Automata/State/MergedState");
 
 var _MergedState2 = _interopRequireDefault(_MergedState);
@@ -23,48 +19,15 @@ var _Rule = require("../Automata/Rule");
 
 var _Rule2 = _interopRequireDefault(_Rule);
 
-var _Automata = require("../Automata/Automata");
-
-var _Automata2 = _interopRequireDefault(_Automata);
-
 var _Alphabet = require("../Automata/Alphabet");
 
 var _Alphabet2 = _interopRequireDefault(_Alphabet);
 
-var _simple = require("../extensions/simple");
+var _object = require("../Automata/services/object");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-// {
-//     states: [{name: 'q0'}, {name: 'q1'}, {name: 'q2'}],
-//         alphabet: ['a', 'b'],
-//     rules: [
-//     {
-//         from: {state: {name: 'q0'}},
-//         to: {state: {name: 'q0'}},
-//         symbol: 'b',
-//     },
-//     {
-//         from: {state: {name: 'q0'}},
-//         to: {state: {name: 'q1'}},
-//         symbol: 'a',
-//     },
-//     {
-//         from: {state: {name: 'q1'}},
-//         to: {state: {name: 'q1'}},
-//         symbol: 'b',
-//     },
-//     {
-//         from: {state: {name: 'q1'}},
-//         to: {state: {name: 'q2'}},
-//         symbol: 'a',
-//     }
-// ],
-//     finalStates: [{name: 'q1'}],
-//     initialState: {name: 'q0'}
-// };
 
 /**
  *
@@ -72,6 +35,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
  * @param  right
  */
 function shuffle(left, right) {
+    left = left.clone();
+    right = right.clone();
+    left.removeEmptyRules();
+    right.removeEmptyRules();
     var rules = [];
 
     var _generateStates = (0, _intersectionFA.generateStates)(left.states, right.states),
@@ -166,7 +133,7 @@ function createRules(left, right, newStates) {
             }
         };
 
-        for (var _iterator = (0, _simple.objectTypedValues)(newStates, _MergedState2.default)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        for (var _iterator = (0, _object.objectValues)(newStates)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
             _loop();
         }
     } catch (err) {

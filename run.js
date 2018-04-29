@@ -1,14 +1,16 @@
 import Alphabet from './src/Automata/Alphabet.js';
 import prefixes from './src/operations/prefixesFA';
-import {toPlain} from './src/Automata/services/plainAutomata';
+import {toPlain} from './src/Automata/services/plainFA';
 import PA from "./src/Automata/PA/PA";
 import FA from "./src/Automata/FA/FA";
 import DFA from "./src/Automata/FA/DFA";
 import intersectionFA from "./src/operations/intersectionFA";
-import insertion from "./src/operations/insertionFA";
+import insertion from "./src/operations/sequentialInsertionFA";
 import reverse from "./src/operations/reverseFA";
 import fullAlphabetDeletion from "./src/operations/fullAlphabetDeletionFA";
-
+import difference from "./src/operations/differenceFA";
+import sequentialDeletion from "./src/operations/sequentialDeletionFA";
+import complement from "./src/operations/complementFA";
 
 let plainPA = {
     states: [{name: 's'}, {name: 'f'}],
@@ -182,41 +184,18 @@ let plain2 = {
 //     initialState: {name: 'q0'}
 // };
 let simple1 = {
-    states: [{name: 'n0'}, {name: 'n1'}, {name: 'n2'}, {name: 'n3'}, {name: 'n4'}],
+    states: [{name: 'n0'}, {name: 'n1'}, {name: 'n2'}],
     alphabet: ['a', 'b'],
     rules: [
         {
             from: {state: {name: 'n0'}},
             to: {state: {name: 'n1'}},
-            symbol: 'a',
+            symbol: '',
         },
-        {
-            from: {state: {name: 'n1'}},
-            to: {state: {name: 'n2'}},
-            symbol: 'a',
-        },
-        {
-            from: {state: {name: 'n0'}},
-            to: {state: {name: 'n3'}},
-            symbol: 'b',
-        },
-        {
-            from: {state: {name: 'n3'}},
-            to: {state: {name: 'n4'}},
-            symbol: 'b',
-        },
-    ],
-    finalStates: [{name: 'n2'}, {name: 'n4'}],
-    initialState: {name: 'n0'}
-};
-let simple2 = {
-    states: [{name: 'n0'}, {name: 'n1'}, {name: 'n2'}],
-    alphabet: ['a'],
-    rules: [
         {
             from: {state: {name: 'n0'}},
             to: {state: {name: 'n1'}},
-            symbol: 'a',
+            symbol: 'b',
         },
         {
             from: {state: {name: 'n1'}},
@@ -225,6 +204,19 @@ let simple2 = {
         },
     ],
     finalStates: [{name: 'n2'}],
+    initialState: {name: 'n0'}
+};
+let simple2 = {
+    states: [{name: 'n0'}, {name: 'n1'}],
+    alphabet: ['a'],
+    rules: [
+        {
+            from: {state: {name: 'n0'}},
+            to: {state: {name: 'n1'}},
+            symbol: 'a',
+        }
+    ],
+    finalStates: [{name: 'n1'}],
     initialState: {name: 'n0'}
 };
 
@@ -254,7 +246,163 @@ let plain3 = {
 };
 
 
+let toDFA = {
+    states: [{name: 'q0'}, {name: 'q1'}, {name: 'q2'}, {name: 'q3'}],
+    alphabet: ['a', 'b', 'c'],
+    rules: [
+        {
+            from: {state: {name: 'q0'}},
+            to: {state: {name: 'q1'}},
+            symbol: 'b',
+        },
+        {
+            from: {state: {name: 'q0'}},
+            to: {state: {name: 'q2'}},
+            symbol: 'b',
+        },
+        {
+            from: {state: {name: 'q1'}},
+            to: {state: {name: 'q2'}},
+            symbol: 'b',
+        },
+        {
+            from: {state: {name: 'q1'}},
+            to: {state: {name: 'q3'}},
+            symbol: 'a',
+        },
+        {
+            from: {state: {name: 'q2'}},
+            to: {state: {name: 'q3'}},
+            symbol: 'c',
+        }
+    ],
+    finalStates: [{name: 'q3'}],
+    initialState: {name: 'q0'}
+};
 
-    let automata = fullAlphabetDeletion(new FA(plain3), new Alphabet(...['b']));
-    console.log(automata.accepts('c'));
+
+let aORb = {
+    states: [{name: 'n0'}, {name: 'n1'}],
+    alphabet: ['a', 'b'],
+    rules: [
+        {
+            from: {state: {name: 'n0'}},
+            to: {state: {name: 'n1'}},
+            symbol: 'a',
+        },
+        {
+            from: {state: {name: 'n0'}},
+            to: {state: {name: 'n1'}},
+            symbol: 'b',
+        },
+    ],
+    finalStates: [{name: 'n1'}],
+    initialState: {name: 'n0'}
+};
+
+
+let aPLUS = {
+    states: [{name: 'n0'}, {name: 'n1'}],
+    alphabet: ['a'],
+    rules: [
+        {
+            from: {state: {name: 'n0'}},
+            to: {state: {name: 'n1'}},
+            symbol: 'a',
+        },
+        {
+            from: {state: {name: 'n1'}},
+            to: {state: {name: 'n1'}},
+            symbol: 'a',
+        },
+    ],
+    finalStates: [{name: 'n1'}],
+    initialState: {name: 'n0'}
+};
+
+let aSTAR = {
+    states: [{name: 'n0'}],
+    alphabet: ['a'],
+    rules: [
+        {
+            from: {state: {name: 'n0'}},
+            to: {state: {name: 'n0'}},
+            symbol: 'a',
+        },
+    ],
+    finalStates: [{name: 'n0'}],
+    initialState: {name: 'n0'}
+};
+
+
+let abaababORbab = {
+    states: [{name: 'q0'}, {name: 'q1'}, {name: 'q2'}, {name: 'q3'}, {name: 'q4'}, {name: 'q5'}, {name: 'q6'}, {name: 'q7'}],
+    alphabet: ['a', 'b'],
+    rules: [
+        {
+            from: {state: {name: 'q0'}},
+            to: {state: {name: 'q1'}},
+            symbol: 'a',
+        },
+        {
+            from: {state: {name: 'q1'}},
+            to: {state: {name: 'q2'}},
+            symbol: 'b',
+        },
+        {
+            from: {state: {name: 'q2'}},
+            to: {state: {name: 'q3'}},
+            symbol: 'a',
+        },
+        {
+            from: {state: {name: 'q3'}},
+            to: {state: {name: 'q4'}},
+            symbol: 'a',
+        },
+        {
+            from: {state: {name: 'q4'}},
+            to: {state: {name: 'q5'}},
+            symbol: 'b',
+        },
+        {
+            from: {state: {name: 'q5'}},
+            to: {state: {name: 'q6'}},
+            symbol: 'a',
+        },
+        {
+            from: {state: {name: 'q6'}},
+            to: {state: {name: 'q7'}},
+            symbol: 'b',
+        },
+        {
+            from: {state: {name: 'q0'}},
+            to: {state: {name: 'q5'}},
+            symbol: 'b',
+        },
+    ],
+    finalStates: [{name: 'q7'}],
+    initialState: {name: 'q0'}
+};
+
+let ab = {
+    states: [{name: 'n0'}, {name: 'n1'}, {name: 'n2'}],
+    alphabet: ['a', 'b'],
+    rules: [
+        {
+            from: {state: {name: 'n0'}},
+            to: {state: {name: 'n1'}},
+            symbol: 'a',
+        },
+        {
+            from: {state: {name: 'n1'}},
+            to: {state: {name: 'n2'}},
+            symbol: 'b',
+        },
+    ],
+    finalStates: [{name: 'n2'}],
+    initialState: {name: 'n0'}
+};
+
+let automata = complement(new FA(abaababORbab));
+console.log(automata.accepts('b'));
 

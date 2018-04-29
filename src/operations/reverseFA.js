@@ -1,15 +1,15 @@
 //@flow
 import FA from '../Automata/FA/FA';
-import {toPlain} from "../Automata/services/plainAutomata";
+import {toPlain} from "../Automata/services/plainFA";
 import Rule from "../Automata/Rule";
-import {objectTypedValues} from "../Automata/services/object";
+import {objectValues} from "../Automata/services/object";
 import State from "../Automata/State/State";
 
 
 export default function reverseFA(fa: FA): FA {
     let newFA = new FA(toPlain(fa));
     newFA.forceOneFinalState();
-    let newInitial =  objectTypedValues(newFA.finalStates, State)[0];
+    let newInitial:State =  objectValues(newFA.finalStates)[0];
     newInitial.isFinal = false;
     newInitial.isInitial = true;
     let newFinal = newFA.initialState;

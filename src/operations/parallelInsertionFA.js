@@ -1,14 +1,18 @@
 //@flow
 import FA from '../Automata/FA/FA';
-import {toPlain} from '../Automata/services/plainAutomata';
+import {toPlain} from '../Automata/services/plainFA';
 import {generateStates} from "./intersectionFA";
 import Alphabet from "../Automata/Alphabet";
 import MergedState from "../Automata/State/MergedState";
 import Rule from "../Automata/Rule";
-import {objectTypedValues} from "../Automata/services/object";
+import {objectValues} from "../Automata/services/object";
 
 
 export default function parallelInsertion(left: FA, right: FA): FA {
+    left = left.clone();
+    right = right.clone();
+    left.removeEmptyRules();
+    right.removeEmptyRules();
     let {newStates, newFinals, newInitial} = generateStates(left.states, right.states),
         newAutomata = new FA();
 
@@ -26,7 +30,7 @@ export default function parallelInsertion(left: FA, right: FA): FA {
 
 function createRules(left: FA, right: FA, newStates: { [key: string]: MergedState }): Rule[] {
     let newRules = [];
-    for (let mergedState of objectTypedValues(newStates, MergedState)) {
+    for (let mergedState of objectValues(newStates)) {
 
         if (mergedState.oldRight.isFinal) {
             newRules = left.rules

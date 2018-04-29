@@ -1,8 +1,7 @@
-require('babel-register');
 const runTest = require('ava');
-const Automata = require('../src/Automata/Automata').default;
-const PA = require('../src/Automata/PA/PA').default;
-const toPlain = require('../src/Automata/services/plainAny').toPlain;
+const FA = require('../dist/Automata/FA/FA').default;
+const PA = require('../dist/Automata/PA/PA').default;
+const toPlain = require('../dist/Automata/services/plainFA_OR_PA').toPlain;
 
 let plain = {
     states: [{name: 's'}, {name: 'f'}],
@@ -52,7 +51,7 @@ let plainPA = {
 
 
 runTest('automataProcessed', test => {
-    let automata = new Automata(plain);
+    let automata = new FA(plain);
     test.is(Object.keys(automata.states).length, 2);
     test.true(automata.states['s'].isInitial);
     test.false(automata.states['s'].isFinal);
@@ -77,7 +76,7 @@ runTest('automataProcessed', test => {
 
 
 runTest('automataCloned', test => {
-    let automata = new Automata(toPlain(new Automata(plain), '_'));
+    let automata = new FA(toPlain(new FA(plain), '_'));
 
     test.is(Object.keys(automata.states).length, 2);
     test.true(automata.states['_s'].isInitial);

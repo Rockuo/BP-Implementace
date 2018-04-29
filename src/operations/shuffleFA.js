@@ -1,41 +1,11 @@
 //@flow
 import FA from '../Automata/FA/FA';
-import State from "../Automata/State/State";
 import MergedState from "../Automata/State/MergedState";
 import {generateStates} from "./intersectionFA";
 import Rule from "../Automata/Rule";
-import Automata from "../Automata/Automata";
 import Alphabet from "../Automata/Alphabet";
-import {objectTypedValues} from "../Automata/services/object";
+import {objectValues} from "../Automata/services/object";
 
-// {
-//     states: [{name: 'q0'}, {name: 'q1'}, {name: 'q2'}],
-//         alphabet: ['a', 'b'],
-//     rules: [
-//     {
-//         from: {state: {name: 'q0'}},
-//         to: {state: {name: 'q0'}},
-//         symbol: 'b',
-//     },
-//     {
-//         from: {state: {name: 'q0'}},
-//         to: {state: {name: 'q1'}},
-//         symbol: 'a',
-//     },
-//     {
-//         from: {state: {name: 'q1'}},
-//         to: {state: {name: 'q1'}},
-//         symbol: 'b',
-//     },
-//     {
-//         from: {state: {name: 'q1'}},
-//         to: {state: {name: 'q2'}},
-//         symbol: 'a',
-//     }
-// ],
-//     finalStates: [{name: 'q1'}],
-//     initialState: {name: 'q0'}
-// };
 
 /**
  *
@@ -43,6 +13,10 @@ import {objectTypedValues} from "../Automata/services/object";
  * @param  right
  */
 export default function shuffle(left: FA, right: FA): ?FA {
+    left = left.clone();
+    right = right.clone();
+    left.removeEmptyRules();
+    right.removeEmptyRules();
     let rules = [];
     let {newStates, newFinals, newInitial} = generateStates(left.states, right.states);
     let automata = new FA();
@@ -59,7 +33,7 @@ export default function shuffle(left: FA, right: FA): ?FA {
 
 function createRules(left: FA, right: FA, newStates:{ [key: string]: MergedState }): Rule[] {
     let newRules = [];
-    for (let newState:MergedState of objectTypedValues(newStates,MergedState)) {
+    for (let newState:MergedState of objectValues(newStates)) {
         let leftRules = left.rules.filter((rule:Rule) => rule.from.state.name === newState.oldLeft.name);
         for (let rule:Rule of leftRules) {
             newRules.push(new Rule({

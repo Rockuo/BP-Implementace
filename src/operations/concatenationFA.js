@@ -1,11 +1,11 @@
 //@flow
 import FA from '../Automata/FA/FA';
-import {toPlain, toPlainLeft} from "../Automata/services/plainAny";
-import type {T_AnyPlainAutomata} from "../Automata/services/plainAny";
+import {toPlain, toPlainLeft, toPlainRight} from "../Automata/services/plainFA_OR_PA";
+import type {T_AnyPlainAutomata} from "../Automata/services/plainFA_OR_PA";
 
-
+// TODO
 export default function concatenation(left: FA, right: FA): FA {
-    let plainLeft:T_AnyPlainAutomata = toPlainLeft(left), plainRight:T_AnyPlainAutomata = toPlainLeft(right);
+    let plainLeft:T_AnyPlainAutomata = toPlainLeft(left), plainRight:T_AnyPlainAutomata = toPlainRight(right);
     let rules = [];
     for (let finalState of plainLeft.finalStates) {
         rules.push({

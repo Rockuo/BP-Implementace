@@ -8,7 +8,8 @@ import State from "../State/State";
 
 import type {T_PlainAutomata} from '../Automata';
 import type {T_PlainRule} from "../Rule";
-import {toPlain} from "../services/plainAny";
+import {toPlain} from "../services/plainPA";
+import FA from "../FA/FA";
 
 
 export type T_PlainPA = T_PlainAutomata & {
@@ -16,6 +17,17 @@ export type T_PlainPA = T_PlainAutomata & {
     stackAlphabet: string[],
 };
 
+/**
+ * Třída reprezentující zásobníkový automat
+ * @type {FA}
+ * @property {{name:State}} states
+ * @property {string[]} alphabet
+ * @property {Rule[]} rules
+ * @property {State} initialState
+ * @property {string} initialStackSymbol
+ * @property {Alphabet} stackAlphabet
+ * @property {Stack} stack
+ */
 export default class PA extends Automata {
 
     initialStackSymbol: string;
@@ -41,7 +53,7 @@ export default class PA extends Automata {
     }
 
     /**
-     *
+     * Přepisuje původní _createRules metodu, tak aby fungovala pro zásobníkový automat
      * @param {array} plainRules
      * @param {State[]} states
      * plainRules:T_PlainRule[], states:{[key:string]:State}
@@ -55,10 +67,8 @@ export default class PA extends Automata {
         }, true));
     }
 
-
-    equals(automata:Automata):boolean
-    {
-
-        return _.isEqual(toPlain(this), toPlain(automata));
+    clone(){
+        return new PA(toPlain(this));
     }
+
 }

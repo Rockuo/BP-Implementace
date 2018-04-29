@@ -9,7 +9,7 @@ var _FA = require('../Automata/FA/FA');
 
 var _FA2 = _interopRequireDefault(_FA);
 
-var _plainAutomata = require('../Automata/services/plainAutomata');
+var _plainFA = require('../Automata/services/plainFA');
 
 var _intersectionFA = require('./intersectionFA');
 
@@ -25,13 +25,18 @@ var _Rule = require('../Automata/Rule');
 
 var _Rule2 = _interopRequireDefault(_Rule);
 
-var _simple = require('../extensions/simple');
+var _object = require('../Automata/services/object');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function parallelInsertion(left, right) {
+    left = left.clone();
+    right = right.clone();
+    left.removeEmptyRules();
+    right.removeEmptyRules();
+
     var _generateStates = (0, _intersectionFA.generateStates)(left.states, right.states),
         newStates = _generateStates.newStates,
         newFinals = _generateStates.newFinals,
@@ -86,7 +91,7 @@ function createRules(left, right, newStates) {
             }).concat(newRules);
         };
 
-        for (var _iterator = (0, _simple.objectTypedValues)(newStates, _MergedState2.default)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        for (var _iterator = (0, _object.objectValues)(newStates)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
             _loop();
         }
     } catch (err) {

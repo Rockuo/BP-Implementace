@@ -1,8 +1,6 @@
-
-require('babel-register');
 const runTest = require('ava');
-const FA = require('../src/Automata/FA/FA').default;
-const concatenation = require("../src/operations/concatenationFA").default;
+const FA = require('../dist/Automata/FA/FA').default;
+const concatenation = require("../dist/operations/concatenationFA").default;
 
 
 let simple1 = {

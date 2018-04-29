@@ -30,7 +30,11 @@ var _State = require('../State/State');
 
 var _State2 = _interopRequireDefault(_State);
 
-var _plainAny = require('../services/plainAny');
+var _plainPA = require('../services/plainPA');
+
+var _FA = require('../FA/FA');
+
+var _FA2 = _interopRequireDefault(_FA);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -42,6 +46,17 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+/**
+ * Třída reprezentující zásobníkový automat
+ * @type {FA}
+ * @property {{name:State}} states
+ * @property {string[]} alphabet
+ * @property {Rule[]} rules
+ * @property {State} initialState
+ * @property {string} initialStackSymbol
+ * @property {Alphabet} stackAlphabet
+ * @property {Stack} stack
+ */
 var PA = function (_Automata) {
     _inherits(PA, _Automata);
 
@@ -68,7 +83,7 @@ var PA = function (_Automata) {
     }
 
     /**
-     *
+     * Přepisuje původní _createRules metodu, tak aby fungovala pro zásobníkový automat
      * @param {array} plainRules
      * @param {State[]} states
      * plainRules:T_PlainRule[], states:{[key:string]:State}
@@ -88,10 +103,9 @@ var PA = function (_Automata) {
             });
         }
     }, {
-        key: 'equals',
-        value: function equals(automata) {
-
-            return _lodash2.default.isEqual((0, _plainAny.toPlain)(this), (0, _plainAny.toPlain)(automata));
+        key: 'clone',
+        value: function clone() {
+            return new PA((0, _plainPA.toPlain)(this));
         }
     }]);
 

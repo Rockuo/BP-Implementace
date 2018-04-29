@@ -1,5 +1,8 @@
-// $FlowFixMe
-export function objectTypedValues (object, oType:(typeof Object)) {
-    // $FlowFixMe
-    return (Object.values(object): oType[])
+/**
+ * Obaluje Object.values do metod, která je ignorovaná FLOW
+ * @param object
+ * @return {*}
+ */
+export function objectValues(object) {
+    return Object.values(object)
 }

@@ -1,7 +1,5 @@
-
-require('babel-register');
 const runTest = require('ava');
-const FA = require('../src/Automata/FA/FA').default;
+const FA = require('../dist/Automata/FA/FA').default;
 
 let plain = {
     states: [{name: 'q0'}, {name: 'q1'}, {name: 'q2'}],

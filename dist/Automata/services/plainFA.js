@@ -14,12 +14,16 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _FA = require('../FA/FA');
+
+var _FA2 = _interopRequireDefault(_FA);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 /**
- *
+ * Převádí Konečný automat na jeho čistou objektovou reprezentaci
  * @param {Automata} automata
  * @param {string} prefix
  * @returns {{states: {name:string}[], alphabet: string[], initialState: {name:string}, rules: {from:{name:string},to:{name:string},symbol:string}[], finalStates: {name:string}[]}}
@@ -30,6 +34,14 @@ function toPlain(automata) {
     return extendableToPlain(automata, prefix, {});
 }
 
+/**
+ * Rozčiřitelná metoda, parsující automat
+ * @param automata
+ * @param prefix
+ * @param stateParser
+ * @param ruleParser
+ * @return {{states: *, alphabet: *[], initialState, rules: *, finalStates: Array}}
+ */
 //$FlowFixMe
 function extendableToPlain(automata) {
     var prefix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
@@ -58,6 +70,12 @@ function extendableToPlain(automata) {
     return { states: states, alphabet: alphabet, initialState: initialState, rules: rules, finalStates: finalStates };
 }
 
+/**
+ * Funkce zpracující pravidla Konečného automatu
+ * @param automata
+ * @param prefix
+ * @return {Array}
+ */
 function plainAutomataRule(automata, prefix) {
     return _lodash2.default.map(automata.rules, function (rule) {
         return {
@@ -68,6 +86,12 @@ function plainAutomataRule(automata, prefix) {
     });
 }
 
+/**
+ * Funkce zpracující stavy FA
+ * @param automata
+ * @param prefix
+ * @return {Array}
+ */
 function plainAutomataState(automata, prefix) {
     return _lodash2.default.map(automata.states, function (state) {
         return { name: prefix + state.name };

@@ -9,8 +9,10 @@ export type T_RuleNode = {state:State,stackTop?:string};
 type T_Rule_Constructor = { from: T_RuleNode, to: T_RuleNode, symbol: string};
 
 /**
- *
  * @type {Rule}
+ * @property {{state:State, stackTop:string}} from
+ * @property {{state:State, stackTop:string}} to
+ * @property {string} symbol
  */
 export default class Rule {
     from: T_RuleNode;
@@ -19,7 +21,6 @@ export default class Rule {
 
 
     /**
-     *
      * @param {object}  plainRule
      * @param {boolean} hasStack
      */
@@ -33,13 +34,17 @@ export default class Rule {
         this.symbol = symbol;
     }
 
-    // equals(rule: Rule) {
-    //     return (
-    //         this.from.state.equals(rule.from.state) &&
-    //         this.from.stackTop === rule.from.stackTop &&
-    //         this.to.state.equals(rule.to.state) &&
-    //         this.to.stackTop === rule.to.stackTop &&
-    //         this.symbol === rule.symbol
-    //     );
-    // }
+    /**
+     * @param {Rule} rule
+     * @return {boolean}
+     */
+    equals(rule: Rule) {
+        return (
+            this.from.state.equals(rule.from.state) &&
+            this.from.stackTop === rule.from.stackTop &&
+            this.to.state.equals(rule.to.state) &&
+            this.to.stackTop === rule.to.stackTop &&
+            this.symbol === rule.symbol
+        );
+    }
 };

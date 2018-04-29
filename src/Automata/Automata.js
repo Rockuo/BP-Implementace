@@ -3,14 +3,17 @@ import State from './State/State';
 import Alphabet from './Alphabet';
 import Rule from './Rule';
 import _ from 'lodash';
-import {toPlain} from './services/plainAutomata';
 
 
 import type {T_PlainRule} from './Rule';
 import type {T_PlainState} from './State/State';
-import {objectTypedValues} from "./services/object";
+import {objectValues} from "./services/object";
+import {AbstractClassException} from "./exceptions";
 
 
+/**
+ * Datový typ pro čistý automat
+ */
 export type T_PlainAutomata = {
     states: T_PlainState[],
     alphabet: string[],
@@ -20,7 +23,7 @@ export type T_PlainAutomata = {
 };
 
 /**
- *
+ * @abstract
  * @type {Automata}
  * @property {{name:State}} states
  * @property {string[]} alphabet
@@ -34,11 +37,14 @@ export default class Automata {
     rules: Rule[];
     initialState: State;
     finalStates: { [key: string]: State };
-    _ignoreRules: {[key: string]: string };
+    _ignoreRules: { [key: string]: string };
 
     /**
      */
     constructor(settings?: T_PlainAutomata) {
+        if(this.constructor.name === 'Automata') {
+            throw new AbstractClassException(this.constructor.name)
+        }
         if (settings) {
             this._initFromPlain(settings);
         }
@@ -70,13 +76,13 @@ export default class Automata {
      * @param {string} name
      */
     _findInitialState(name: string): State {
-        return objectTypedValues(this.states, State).find(state => {
+        return objectValues(this.states).find(state => {
             if (state.name === name) {
                 state.setAsInitial();
                 return true;
             }
             return false;
-        })
+        });
     }
 
     /**
@@ -84,14 +90,14 @@ export default class Automata {
      */
     forceOneFinalState() {
         let newFinalState = new State({
-            name: 'F-'+objectTypedValues(this.finalStates,State).map((state:State) => state.name).join('-'),
-            isFinal:true
+            name: 'F-' + objectValues(this.finalStates).map((state: State) => state.name).join('-'),
+            isFinal: true
         });
-        for (let state of objectTypedValues(this.finalStates,State)) {
+        for (let state of objectValues(this.finalStates)) {
             state.isFinal = false;
-            this.rules.push(new Rule({from: {state}, to: {state:newFinalState}, symbol: ''}))
+            this.rules.push(new Rule({from: {state}, to: {state: newFinalState}, symbol: ''}))
         }
-        this.finalStates = {[newFinalState.name]:newFinalState};
+        this.finalStates = {[newFinalState.name]: newFinalState};
         this.states[newFinalState.name] = newFinalState;
     }
 
@@ -112,17 +118,34 @@ export default class Automata {
     }
 
     /**
-     * Smaže neukončující stavy(a přechody k nim)
+     * Odstraní nedostupné stavy
      */
-    removeUselessStatesAndRules() {
-        this.states = {};
-        this._removeUselessStates(objectTypedValues(this.finalStates));
-        this._removeUselessRules();
+    removeUnreachableStates() {
+        this.states = {[this.initialState.name]: this.initialState};
+        this._ignoreRules = {};
+        this._removeUnreachableStates([this.initialState]);
+        this._removeUnattachedRules();
+        for (let fState:State of objectValues(this.finalStates)){
+            if(!this.states[fState.name]){
+                delete this.finalStates[fState.name];
+            }
+        }
     }
 
-    _removeUselessRules() {
+    /**
+     * Smaže neukončující stavy(a přechody k nim)
+     */
+    removeTrapStates() {
+        this.states = {...this.finalStates};
+        this._ignoreRules = {};
+        this._removeTrapStates(objectValues(this.finalStates));
+        this._removeUnattachedRules();
+        this.states[this.initialState.name] = this.initialState;
+    }
+
+    _removeUnattachedRules() {
         let newRules = [];
-        let states = objectTypedValues(this.states);
+        let states = objectValues(this.states);
         for (let rule of this.rules) {
             if (
                 states.filter(state => rule.from.state.name === state.name).length > 0 &&
@@ -134,7 +157,25 @@ export default class Automata {
         this.rules = newRules;
     }
 
-    _removeUselessStates(useful: State[]) {
+
+    _removeUnreachableStates(reachables: State[] = [this.initialState]) {
+        for (let reachable of reachables) {
+            let newReachable = this.rules
+                .filter((rule: Rule) => rule.from.state.equals(reachable) && !this.states[rule.to.state.name])
+                .map((rule: Rule) => {
+                    let state = rule.to.state;
+                    this.states[state.name] = state;
+                    return state
+                });
+
+            if (newReachable.length) {
+                this._removeUnreachableStates(newReachable);
+            }
+        }
+    }
+
+
+    _removeTrapStates(useful: State[]) {
         for (let finalState of (useful: State[])) {
             let newUseful = this.rules
                 .filter((rule: Rule) => rule.to.state.name === finalState.name && !this.states[rule.from.state.name])
@@ -144,71 +185,73 @@ export default class Automata {
                     return state
                 });
 
-            if (!newUseful.length) return;
-
-            this._removeUselessStates(newUseful);
+            if (newUseful.length) {
+                this._removeTrapStates(newUseful);
+            }
         }
     }
 
-    _findRules(from: State, symbol: string): Rule[] {
-        // let rules = this.rules
-        //     .filter((rule: Rule) => !(this._ignoreRules[rule.from.state.name] && this._ignoreRules[rule.from.state.name] === rule.symbol))
-        //     .filter((rule:Rule) => rule.from.state.name === from.name)
-        //     .filter((rule:Rule) => rule.symbol === symbol);
-        //
-        // for (let rule of this.rules) {
-        //     let a =!(!!this._ignoreRules[rule.from.state.name] && this._ignoreRules[rule.from.state.name] === rule.symbol);
-        //     let e = rule.from.state.name;
-        //     let c = this._ignoreRules[rule.from.state.name] === rule.symbol;
-        //     let b = !!this._ignoreRules[rule.from.state.name];
-        //     let d =!(this._ignoreRules[rule.from.state.name] && this._ignoreRules[rule.from.state.name] === rule.symbol);
-        // }
-
+    _findRules(from: State, symbol?: (string|void) = undefined): Rule[] {
         return this.rules
             .filter((rule: Rule) => !(this._ignoreRules[rule.from.state.name] === rule.symbol))
             .filter((rule: Rule) => rule.from.state.name === from.name)
-            .filter((rule: Rule) => rule.symbol === symbol);
+            .filter((rule: Rule) => symbol === undefined || rule.symbol === symbol);
     }
 
-    accepts(word: string, state: State = this.initialState, initialCall = true): boolean {
-        if(initialCall) {
-            this._ignoreRules = {};
-            // this.debugRoute=[];
-        }
-
-
-        if (!word) {
-            if(state.isFinal) return true;
-            for (let rule of this._findRules(state, '')) {
-                if (rule.to.state.isFinal) return true;
-            }
-            return false;
-        }
-        let symbol = word[0];
-        word = word.slice(1);
-
-        for (let rule of this._findRules(state, symbol)) {
-            let ignoreBackup = this._ignoreRules;
-            this._ignoreRules = {};
-            let result = this.accepts(word, rule.to.state, false);
-            this._ignoreRules = ignoreBackup;
-            if (result) {
-                // this.debugRoute.push({from:rule.from.state.name, symbol:rule.symbol, to:rule.to.state.name});
-                return true
+    /**
+     * ajistí právě jeden uklízecí stav
+     */
+    ensureOneTrapState() {
+        this.removeTrapStates();
+        let cleanState = new State({
+            name: `clean(id_${State.randomName()})`
+        });
+        this.states[cleanState.name] = cleanState;
+        for (let state of objectValues(this.states)) {
+            let existingSymbols = this._findRules(state).map((rule: Rule) => rule.symbol);
+            for (let symbol of this.alphabet) {
+                if (existingSymbols.indexOf(symbol) < 0) {
+                    this.rules.push(new Rule({from: {state}, to: {state: cleanState}, symbol}));
+                }
             }
         }
-
-        word = symbol + word;
-        for (let rule of this._findRules(state, '')) {
-            let ignoreBackup = this._ignoreRules;
-            this._ignoreRules[rule.from.state.name] = '';
-            let result = this.accepts(word, rule.to.state, false);
-            this._ignoreRules = ignoreBackup;
-            if (result) return true;
+        for (let symbol of this.alphabet) {
+            this.rules.push(new Rule({from: {state: cleanState}, to: {state: cleanState}, symbol}));
         }
+    }
 
+    _followEmptyRules(state: State) {
+        let found;
+        do {
+            let emptyRules = this._findRules(state, '');
+            found = !!emptyRules.length;
+            for (let emptyRule of emptyRules) {
+                _.remove(this.rules, (rule: Rule) => rule.equals(emptyRule));
+                let nextStateRules = this._findRules(emptyRule.to.state);
+                for (let nextStateRule of nextStateRules) {
+                    this.rules.push(new Rule({
+                        from: {state: state},
+                        symbol: nextStateRule.symbol,
+                        to: nextStateRule.to
+                    }));
+                }
+                if (emptyRule.to.state.isFinal) {
+                    state.isFinal = true
+                }
+            }
+        } while (found)
+    }
 
-        return false;
+    /**
+     * Odstraní sigma pravidla
+     */
+    removeEmptyRules() {
+        //vyčstíme si ignore rules (jen pro jistotu)
+        this._ignoreRules = {};
+        for (let state of objectValues(this.states)) {
+            this._followEmptyRules(state);
+        }
+        this.removeUnreachableStates();
     }
 
     /**
@@ -230,9 +273,5 @@ export default class Automata {
      */
     addRule(rule: Rule) {
         this.rules.push(rule);
-    }
-
-    equals(automata: Automata): boolean {
-        return _.isEqual(toPlain(this), toPlain(automata));
     }
 };

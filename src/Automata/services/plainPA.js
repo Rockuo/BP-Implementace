@@ -2,7 +2,7 @@
 import PA from "../PA/PA";
 import type {T_PlainPA} from "../PA/PA";
 import Automata from "../Automata";
-import {extendableToPlain} from "./plainAutomata";
+import {extendableToPlain} from "./plainFA";
 import _ from 'lodash';
 
 
@@ -14,19 +14,31 @@ import _ from 'lodash';
  * @returns {{states: {name:string}[], alphabet: string[], initialState: {name:string}, rules: {from:{name:string},to:{name:string},symbol:string}[], finalStates: {name:string}[]}}
  */
 export function toPlain(automata: PA, prefix: string = ''):T_PlainPA {
-
     let result =extendableToPlain(automata,prefix, {ruleParser: plainPARule});
     // $FlowFixMe
     result = (result:T_PlainPA);
     return additionalPA(automata, prefix, result);
 }
 
+/**
+ * Speciální atributy Zásobníkového automatu
+ * @param automata
+ * @param prefix
+ * @param result
+ * @return {T_PlainPA}
+ */
 function additionalPA(automata: PA, prefix: string, result: T_PlainPA) {
     result.initialStackSymbol = automata.initialStackSymbol;
     result.stackAlphabet = [...automata.stackAlphabet];
     return result;
 }
 
+/**
+ * Zpracovávání pravidel zásbníkového automatu
+ * @param automata
+ * @param prefix
+ * @return {Array}
+ */
 function plainPARule(automata: PA, prefix: string) {
     return _.map(automata.rules, rule => {
         return {

@@ -9,15 +9,16 @@ var _FA = require("../Automata/FA/FA");
 
 var _FA2 = _interopRequireDefault(_FA);
 
-var _plainAny = require("../Automata/services/plainAny");
+var _plainFA_OR_PA = require("../Automata/services/plainFA_OR_PA");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+// TODO
 function concatenation(left, right) {
-    var plainLeft = (0, _plainAny.toPlainLeft)(left),
-        plainRight = (0, _plainAny.toPlainLeft)(right);
+    var plainLeft = (0, _plainFA_OR_PA.toPlainLeft)(left),
+        plainRight = (0, _plainFA_OR_PA.toPlainRight)(right);
     var rules = [];
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;

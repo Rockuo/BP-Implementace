@@ -1,5 +1,9 @@
 //@flow
 
+/**
+ * @type {Stack}
+ * @property {string[]} stack
+ */
 export default class Stack {
 
     stack:string[];

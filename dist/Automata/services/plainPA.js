@@ -13,7 +13,7 @@ var _Automata = require("../Automata");
 
 var _Automata2 = _interopRequireDefault(_Automata);
 
-var _plainAutomata = require("./plainAutomata");
+var _plainFA = require("./plainFA");
 
 var _lodash = require("lodash");
 
@@ -32,19 +32,31 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 function toPlain(automata) {
     var prefix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
 
-
-    var result = (0, _plainAutomata.extendableToPlain)(automata, prefix, { ruleParser: plainPARule });
+    var result = (0, _plainFA.extendableToPlain)(automata, prefix, { ruleParser: plainPARule });
     // $FlowFixMe
     result = result;
     return additionalPA(automata, prefix, result);
 }
 
+/**
+ * Speciální atributy Zásobníkového automatu
+ * @param automata
+ * @param prefix
+ * @param result
+ * @return {T_PlainPA}
+ */
 function additionalPA(automata, prefix, result) {
     result.initialStackSymbol = automata.initialStackSymbol;
     result.stackAlphabet = [].concat(_toConsumableArray(automata.stackAlphabet));
     return result;
 }
 
+/**
+ * Zpracovávání pravidel zásbníkového automatu
+ * @param automata
+ * @param prefix
+ * @return {Array}
+ */
 function plainPARule(automata, prefix) {
     return _lodash2.default.map(automata.rules, function (rule) {
         return {

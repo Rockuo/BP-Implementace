@@ -5,9 +5,20 @@ import Alphabet from '../Automata/Alphabet';
 import MergedState from '../Automata/State/MergedState';
 import _ from 'lodash';
 import Rule from "../Automata/Rule";
-import {objectTypedValues} from "../Automata/services/object";
+import {objectValues} from "../Automata/services/object";
 
+/**
+ * Průnik Konečného automatu
+ * @param {FA} left
+ * @param {FA} right
+ * @return {FA}
+ */
 export default function intersectionFA(left: FA, right: FA): FA {
+    left = left.clone();
+    right = right.clone();
+    left.removeEmptyRules();
+    right.removeEmptyRules();
+
     let {newStates, newFinals, newInitial} = generateStates(left.states, right.states),
         newAutomata = new FA();
     // $FlowFixMe
@@ -45,27 +56,21 @@ function generateRules(left: FA, right: FA, newStates:{ [key: string]: MergedSta
     let lRules = left.rules, rRules = right.rules;
 
     let newRules = [];
-
-
-    let newStatesArr = (objectTypedValues(newStates): MergedState[]);
-
-    for (let state of objectTypedValues(left.states)) {
-        let fromStates = newStatesArr.filter((mState:MergedState)=> state.name === mState.oldLeft.name),
-            lStateRules = lRules.filter((rule:Rule) => rule.from.state.name === state.name);
-
-        for (let lStateRule of lStateRules) {
-            for (let fromState of fromStates) {
-                let rStateRules = rRules.filter(
-                    (rule:Rule) => (rule.from.state.name === fromState.oldRight.name && rule.symbol === lStateRule.symbol)
-                );
-                for (let rStateRule of rStateRules) {
-                    newRules.push(new Rule({
-                        from:{state: fromState},
-                        to:{state: newStates[MergedState.createName(lStateRule.to.state, rStateRule.to.state)]},
-                        symbol:rStateRule.symbol}));
-                }
+    for (let mergedState: MergedState of objectValues(newStates)) {
+        let filteredLRules= lRules.filter((rule:Rule) => rule.from.state.equals(mergedState.oldLeft));
+        for (let lRule of filteredLRules) {
+            let filteredRRules = rRules.filter((rule:Rule) => {
+                return rule.from.state.equals(mergedState.oldRight) && rule.symbol === lRule.symbol;
+            });
+            for (let rRule of filteredRRules) {
+                newRules.push(new Rule({
+                    from:{state:mergedState},
+                    symbol:rRule.symbol,
+                    to:{state:newStates[MergedState.createName(lRule.to.state, rRule.to.state)]}
+                }));
             }
         }
     }
+
     return newRules;
 }

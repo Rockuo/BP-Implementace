@@ -1,9 +1,8 @@
-require('babel-register');
 const runTest = require('ava');
-const Automata = require('../src/Automata/Automata').default;
-const PA = require('../src/Automata/PA/PA').default;
-const union = require('../src/operations/union').default;
-const State = require("../src/Automata/State/State").default;
+const FA = require('../dist/Automata/FA/FA').default;
+const PA = require('../dist/Automata/PA/PA').default;
+const union = require('../dist/operations/union').default;
+const State = require("../dist/Automata/State/State").default;
 
 
 let plain = {
@@ -52,7 +51,7 @@ let plainPA = {
 };
 
 runTest('unionAutomata', test => {
-    let l_automata = new Automata(plain), r_automata = new Automata(plain);
+    let l_automata = new FA(plain), r_automata = new FA(plain);
 
     let unionAutomata = union(l_automata, r_automata);
 
