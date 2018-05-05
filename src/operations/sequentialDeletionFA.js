@@ -24,7 +24,7 @@ export default function sequentialDeletion(left: FA, right: FA, specialSymbol: s
     let copyLeftStates = objectValues(copyLeft.states);
     for (let newInitialState: State of copyLeftStates) {
         for (let newFinalState: State of copyLeftStates) {
-            copyLeft.initialState = newFinalState;
+            copyLeft.initialState = newInitialState;
             newInitialState.isInitial = true;
             copyLeft.finalStates = {[newFinalState.name]: newFinalState};
             newFinalState.isFinal = true;
@@ -48,6 +48,11 @@ export default function sequentialDeletion(left: FA, right: FA, specialSymbol: s
             newInitialState.isInitial = false;
         }
     }
+
+    return specialRulesToResultAutomata(left, right,specialSymbol);
+};
+
+export function specialRulesToResultAutomata(left:FA, right:FA,specialSymbol: string) {
     let sigmaIterSpecialSigmaIter = new FA();
     sigmaIterSpecialSigmaIter.alphabet = left.alphabet;
     let initState = new State({name:'start', isInitial:true});
@@ -75,5 +80,4 @@ export default function sequentialDeletion(left: FA, right: FA, specialSymbol: s
     intersection.removeUnreachableStates();
 
     return intersection;
-};
-
+}

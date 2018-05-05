@@ -60,7 +60,7 @@ export default class PA extends Automata {
      * plainRules: T_PlainRule[], states:{[key:string]:State}
      */
     _createRules(plainRules: T_PlainRule[], states: { [key: string]: State }) {
-        return _.map(plainRules, plainRule => new Rule({
+        return plainRules.map(plainRule => new Rule({
             from: {state: states[plainRule.from.state.name], stackTop: plainRule.from.stackTop},
             to: {state: states[plainRule.to.state.name], stackTop: plainRule.to.stackTop},
             symbol: plainRule.symbol

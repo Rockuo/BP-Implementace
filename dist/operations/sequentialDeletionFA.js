@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.default = sequentialDeletion;
+exports.specialRulesToResultAutomata = specialRulesToResultAutomata;
 
 var _FA = require("../Automata/FA/FA");
 
@@ -36,8 +37,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function sequentialDeletion(left, right) {
-    var _sigmaIterSpecialSigm;
-
     var specialSymbol = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '#';
 
     left = left.clone();
@@ -81,15 +80,15 @@ function sequentialDeletion(left, right) {
     try {
         for (var _iterator2 = copyLeftStates[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
             var newInitialState = _step2.value;
-            var _iteratorNormalCompletion4 = true;
-            var _didIteratorError4 = false;
-            var _iteratorError4 = undefined;
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
 
             try {
-                for (var _iterator4 = copyLeftStates[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                    var newFinalState = _step4.value;
+                for (var _iterator3 = copyLeftStates[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                    var newFinalState = _step3.value;
 
-                    copyLeft.initialState = newFinalState;
+                    copyLeft.initialState = newInitialState;
                     newInitialState.isInitial = true;
                     copyLeft.finalStates = _defineProperty({}, newFinalState.name, newFinalState);
                     newFinalState.isFinal = true;
@@ -98,9 +97,9 @@ function sequentialDeletion(left, right) {
                     partLeft.removeUnreachableStates();
                     if (Object.keys(partLeft.finalStates).length > 0) {
                         partLeft.removeTrapStates();
-                        var _intersection = (0, _intersectionFA2.default)(partLeft, right);
-                        _intersection.removeUnreachableStates();
-                        if (Object.keys(_intersection.finalStates).length > 0) {
+                        var intersection = (0, _intersectionFA2.default)(partLeft, right);
+                        intersection.removeUnreachableStates();
+                        if (Object.keys(intersection.finalStates).length > 0) {
                             left.rules.push(new _Rule2.default({
                                 from: { state: left.states[newInitialState.name] },
                                 to: { state: left.states[newFinalState.name] },
@@ -113,16 +112,16 @@ function sequentialDeletion(left, right) {
                     newInitialState.isInitial = false;
                 }
             } catch (err) {
-                _didIteratorError4 = true;
-                _iteratorError4 = err;
+                _didIteratorError3 = true;
+                _iteratorError3 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                        _iterator4.return();
+                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                        _iterator3.return();
                     }
                 } finally {
-                    if (_didIteratorError4) {
-                        throw _iteratorError4;
+                    if (_didIteratorError3) {
+                        throw _iteratorError3;
                     }
                 }
             }
@@ -141,6 +140,12 @@ function sequentialDeletion(left, right) {
             }
         }
     }
+
+    return specialRulesToResultAutomata(left, right, specialSymbol);
+};
+
+function specialRulesToResultAutomata(left, right, specialSymbol) {
+    var _sigmaIterSpecialSigm;
 
     var sigmaIterSpecialSigmaIter = new _FA2.default();
     sigmaIterSpecialSigmaIter.alphabet = left.alphabet;
@@ -164,29 +169,29 @@ function sequentialDeletion(left, right) {
     var intersection = (0, _intersectionFA2.default)(left, sigmaIterSpecialSigmaIter);
     var index = intersection.alphabet.indexOf(specialSymbol);
     if (index !== -1) intersection.alphabet.splice(index, 1);
-    var _iteratorNormalCompletion3 = true;
-    var _didIteratorError3 = false;
-    var _iteratorError3 = undefined;
+    var _iteratorNormalCompletion4 = true;
+    var _didIteratorError4 = false;
+    var _iteratorError4 = undefined;
 
     try {
-        for (var _iterator3 = intersection.rules[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-            var rule = _step3.value;
+        for (var _iterator4 = intersection.rules[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+            var rule = _step4.value;
 
             if (rule.symbol === specialSymbol) {
                 rule.symbol = '';
             }
         }
     } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
     } finally {
         try {
-            if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                _iterator3.return();
+            if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                _iterator4.return();
             }
         } finally {
-            if (_didIteratorError3) {
-                throw _iteratorError3;
+            if (_didIteratorError4) {
+                throw _iteratorError4;
             }
         }
     }
@@ -195,4 +200,4 @@ function sequentialDeletion(left, right) {
     intersection.removeUnreachableStates();
 
     return intersection;
-};
+}

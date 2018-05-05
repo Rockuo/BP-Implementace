@@ -18,6 +18,12 @@ var _FA = require('../FA/FA');
 
 var _FA2 = _interopRequireDefault(_FA);
 
+var _object = require('./object');
+
+var _State = require('../State/State');
+
+var _State2 = _interopRequireDefault(_State);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -55,14 +61,36 @@ function extendableToPlain(automata) {
         finalStates = [],
         alphabet = [].concat(_toConsumableArray(automata.alphabet));
 
-    _lodash2.default.each(automata.states, function (state) {
-        if (state.isInitial) {
-            initialState.name = prefix + state.name;
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+        for (var _iterator = (0, _object.objectValues)(automata.states)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var state = _step.value;
+
+            if (state.isInitial) {
+                initialState.name = prefix + state.name;
+            }
+            if (state.isFinal) {
+                finalStates.push({ name: prefix + state.name });
+            }
         }
-        if (state.isFinal) {
-            finalStates.push({ name: prefix + state.name });
+    } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+    } finally {
+        try {
+            if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
+            }
+        } finally {
+            if (_didIteratorError) {
+                throw _iteratorError;
+            }
         }
-    });
+    }
+
     var states = stateParser(automata, prefix);
 
     var rules = ruleParser(automata, prefix);
@@ -77,7 +105,7 @@ function extendableToPlain(automata) {
  * @return {Array}
  */
 function plainAutomataRule(automata, prefix) {
-    return _lodash2.default.map(automata.rules, function (rule) {
+    return automata.rules.map(function (rule) {
         return {
             from: { state: { name: prefix + rule.from.state.name } },
             to: { state: { name: prefix + rule.to.state.name } },
@@ -93,7 +121,7 @@ function plainAutomataRule(automata, prefix) {
  * @return {Array}
  */
 function plainAutomataState(automata, prefix) {
-    return _lodash2.default.map(automata.states, function (state) {
+    return (0, _object.objectValues)(automata.states).map(function (state) {
         return { name: prefix + state.name };
     });
 }

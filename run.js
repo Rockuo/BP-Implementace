@@ -11,6 +11,8 @@ import fullAlphabetDeletion from "./src/operations/fullAlphabetDeletionFA";
 import difference from "./src/operations/differenceFA";
 import sequentialDeletion from "./src/operations/sequentialDeletionFA";
 import complement from "./src/operations/complementFA";
+import interlacement from "./src/operations/interlacementFA";
+import {lPop, rPop} from "./src/operations/popFA";
 
 let plainPA = {
     states: [{name: 's'}, {name: 'f'}],
@@ -335,9 +337,9 @@ let aSTAR = {
 };
 
 
-let abaababORbab = {
+let abaababORbabORc = {
     states: [{name: 'q0'}, {name: 'q1'}, {name: 'q2'}, {name: 'q3'}, {name: 'q4'}, {name: 'q5'}, {name: 'q6'}, {name: 'q7'}],
-    alphabet: ['a', 'b'],
+    alphabet: ['a', 'b', 'c'],
     rules: [
         {
             from: {state: {name: 'q0'}},
@@ -379,6 +381,11 @@ let abaababORbab = {
             to: {state: {name: 'q5'}},
             symbol: 'b',
         },
+        {
+            from: {state: {name: 'q0'}},
+            to: {state: {name: 'q7'}},
+            symbol: 'c',
+        },
     ],
     finalStates: [{name: 'q7'}],
     initialState: {name: 'q0'}
@@ -403,6 +410,74 @@ let ab = {
     initialState: {name: 'n0'}
 };
 
-let automata = complement(new FA(abaababORbab));
-console.log(automata.accepts('b'));
+let b_aS_bb_S_S = {
+    states: [{name:'q0'},{name:'q1'},{name:'q2'}],
+    alphabet: ['a', 'b'],
+    rules: [
+        {
+            from: {state: {name: 'q0'}},
+            to: {state: {name: 'q1'}},
+            symbol: 'b',
+        },
+        {
+            from: {state: {name: 'q1'}},
+            to: {state: {name: 'q1'}},
+            symbol: 'a',
+        },
+        {
+            from: {state: {name: 'q1'}},
+            to: {state: {name: 'q2'}},
+            symbol: 'b',
+        },
+        {
+            from: {state: {name: 'q2'}},
+            to: {state: {name: 'q1'}},
+            symbol: 'b',
+        },
+    ],
+    finalStates: [{name: 'q1'}],
+    initialState: {name: 'q0'}
+};
+
+let abS = {
+    states: [{name: 'n0'}, {name: 'n1'}],
+    alphabet: ['a', 'b'],
+    rules: [
+        {
+            from: {state: {name: 'n0'}},
+            to: {state: {name: 'n1'}},
+            symbol: 'a',
+        },
+        {
+            from: {state: {name: 'n1'}},
+            to: {state: {name: 'n1'}},
+            symbol: 'b',
+        },
+    ],
+    finalStates: [{name: 'n1'}],
+    initialState: {name: 'n0'}
+};
+
+let b = {
+    states: [{name: 'n0'}, {name: 'n1'}],
+    alphabet: ['b'],
+    rules: [
+        {
+            from: {state: {name: 'n0'}},
+            to: {state: {name: 'n1'}},
+            symbol: 'b',
+        },
+    ],
+    finalStates: [{name: 'n1'}],
+    initialState: {name: 'n0'}
+};
+
+let automata = rPop(new FA(abaababORbabORc),new FA(b));
+// automata.removeUnreachableStates();
+// automata.removeTrapStates();
+console.log(automata.accepts('abaaba'));
+console.log(automata.accepts('ba'));
+console.log(automata.accepts('abaabab'));
+console.log(automata.accepts('ab'));
+console.log(automata.accepts('c'));
 

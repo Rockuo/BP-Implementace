@@ -58,7 +58,7 @@ var MergedState = function (_State) {
     _createClass(MergedState, null, [{
         key: "createName",
         value: function createName(lState, rState) {
-            return lState.name + "-" + rState.name;
+            return (lState instanceof _State3.default ? lState.name : lState) + "-" + (rState instanceof _State3.default ? rState.name : rState);
         }
     }]);
 

@@ -168,7 +168,7 @@ var Automata = function () {
     }, {
         key: '_findFinalStates',
         value: function _findFinalStates(finalStates) {
-            var finalNames = _lodash2.default.map(finalStates, function (state) {
+            var finalNames = finalStates.map(function (state) {
                 return state.name;
             });
             return _lodash2.default.pickBy(this.states, function (state) {

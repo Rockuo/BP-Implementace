@@ -70,9 +70,31 @@ var State = function () {
         key: 'createStates',
         value: function createStates(plainStates) {
             var states = {};
-            _lodash2.default.each(plainStates, function (plainState) {
-                states[plainState.name] = new State(plainState);
-            });
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = plainStates[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var plainState = _step.value;
+
+                    states[plainState.name] = new State(plainState);
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
             return states;
         }
     }, {

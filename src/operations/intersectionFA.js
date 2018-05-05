@@ -40,15 +40,16 @@ export function generateStates(lStates: { [key: string]: State }, rStates: { [ke
     newFinals: { [key: string]: MergedState }
 } {
     let newStates = {}, newFinals = {}, newInitial, statesByLeft = {}, statesByRight = {};
-    _.each(lStates, (lState: State) => _.each(rStates, rState => {
-        let merged = new MergedState(lState, rState);
+    for(let lState:State of objectValues(lStates)){
+        for(let rState:State of objectValues(rStates)){
+            let merged = new MergedState(lState, rState);
 
-        newStates[merged.name] = merged;
+            newStates[merged.name] = merged;
 
-        if (merged.isFinal) newFinals[merged.name] = merged;
-        if (merged.isInitial) newInitial = merged;
-
-    }));
+            if (merged.isFinal) newFinals[merged.name] = merged;
+            if (merged.isInitial) newInitial = merged;
+        }
+    }
     return {newStates, newFinals, newInitial, statesByLeft, statesByRight};
 }
 

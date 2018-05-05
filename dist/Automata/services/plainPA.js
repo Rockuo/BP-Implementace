@@ -58,7 +58,7 @@ function additionalPA(automata, prefix, result) {
  * @return {Array}
  */
 function plainPARule(automata, prefix) {
-    return _lodash2.default.map(automata.rules, function (rule) {
+    return automata.rules.map(function (rule) {
         return {
             from: { state: { name: prefix + rule.from.state.name }, stackTop: rule.from.stackTop },
             to: { state: { name: prefix + rule.to.state.name }, stackTop: rule.to.stackTop },

@@ -4,6 +4,8 @@ import _ from 'lodash';
 
 import type {T_PlainAutomata} from '../Automata';
 import FA from "../FA/FA";
+import {objectValues} from "./object";
+import State from "../State/State";
 
 /**
  * Převádí Konečný automat na jeho čistou objektovou reprezentaci
@@ -27,14 +29,14 @@ export function toPlain(automata: FA, prefix: string = ''): T_PlainAutomata {
 export function extendableToPlain(automata: FA, prefix: string = '', {stateParser = plainAutomataState, ruleParser = plainAutomataRule}) {
     let initialState = {}, finalStates = [], alphabet = [...automata.alphabet];
 
-    _.each(automata.states, state => {
+    for (let state:State of objectValues(automata.states)){
         if (state.isInitial) {
             initialState.name = prefix + state.name;
         }
         if (state.isFinal) {
             finalStates.push({name: prefix + state.name});
         }
-    });
+    }
     let states = stateParser(automata, prefix);
 
     let rules = ruleParser(automata, prefix);
@@ -49,7 +51,7 @@ export function extendableToPlain(automata: FA, prefix: string = '', {stateParse
  * @return {Array}
  */
 function plainAutomataRule(automata: FA, prefix: string) {
-    return _.map(automata.rules, rule => {
+    return automata.rules.map(rule => {
         return {
             from: {state: {name: prefix + rule.from.state.name}},
             to: {state: {name: prefix + rule.to.state.name}},
@@ -65,7 +67,7 @@ function plainAutomataRule(automata: FA, prefix: string) {
  * @return {Array}
  */
 function plainAutomataState(automata: FA, prefix: string) {
-    return _.map(automata.states, state => {
+    return objectValues(automata.states).map(state => {
         return {name: prefix + state.name};
     });
 }

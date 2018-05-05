@@ -1,6 +1,7 @@
+require('babel-register');
 const runTest = require('ava');
-const FA = require('../dist/Automata/FA/FA').default;
-const sequentialDeletion = require("../dist/operations/sequentialDeletionFA").default;
+const FA = require('../src/Automata/FA/FA').default;
+const sequentialDeletion = require("../src/operations/sequentialDeletionFA").default;
 
 let abaababORbabORc = {
     states: [{name: 'q0'}, {name: 'q1'}, {name: 'q2'}, {name: 'q3'}, {name: 'q4'}, {name: 'q5'}, {name: 'q6'}, {name: 'q7'}],

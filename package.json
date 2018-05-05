@@ -4,8 +4,11 @@
   "description": "",
   "main": "run.js",
   "scripts": {
-    "test": "ava",
-    "build": "rm -r ./dist && babel src/ -d ./dist"
+    "test": "ava ./tests/*",
+    "es6Test": "ava ./es6Tests/*",
+    "coverage": "npm run es6Test && nyc report --reporter=text-lcov | coveralls",
+    "build": "rm -r ./dist; babel src/ -d ./dist",
+    "testbuild": "npm run build && ava --verbose"
   },
   "repository": {
     "type": "git",
@@ -21,13 +24,15 @@
     "lodash": "^4.17.5"
   },
   "devDependencies": {
-    "ava": "^1.0.0-beta.3",
+    "ava": "1.0.0-beta.3",
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-flow": "^6.23.0",
     "babel-register": "^6.26.0",
-    "flow-bin": "^0.67.1"
+    "coveralls": "^3.0.1",
+    "flow-bin": "^0.67.1",
+    "nyc": "^11.7.1"
   },
   "ava": {
     "babel": {

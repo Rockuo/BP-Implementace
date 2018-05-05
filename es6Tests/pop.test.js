@@ -1,6 +1,34 @@
+require('babel-register');
 const runTest = require('ava');
-const FA = require('../dist/Automata/FA/FA').default;
-const sequentialDeletion = require("../dist/operations/sequentialDeletionFA").default;
+const FA = require('../src/Automata/FA/FA').default;
+const pop = require("../src/operations/popFA");
+
+let b = {
+    states: [{name: 'n0'}, {name: 'n1'}],
+    alphabet: ['b'],
+    rules: [
+        {
+            from: {state: {name: 'n0'}},
+            to: {state: {name: 'n1'}},
+            symbol: 'b',
+        },
+    ],
+    finalStates: [{name: 'n1'}],
+    initialState: {name: 'n0'}
+};
+let a = {
+    states: [{name: 'n0'}, {name: 'n1'}],
+    alphabet: ['a'],
+    rules: [
+        {
+            from: {state: {name: 'n0'}},
+            to: {state: {name: 'n1'}},
+            symbol: 'a',
+        },
+    ],
+    finalStates: [{name: 'n1'}],
+    initialState: {name: 'n0'}
+};
 
 let abaababORbabORc = {
     states: [{name: 'q0'}, {name: 'q1'}, {name: 'q2'}, {name: 'q3'}, {name: 'q4'}, {name: 'q5'}, {name: 'q6'}, {name: 'q7'}],
@@ -56,32 +84,21 @@ let abaababORbabORc = {
     initialState: {name: 'q0'}
 };
 
-let ab = {
-    states: [{name: 'n0'}, {name: 'n1'}, {name: 'n2'}],
-    alphabet: ['a', 'b'],
-    rules: [
-        {
-            from: {state: {name: 'n0'}},
-            to: {state: {name: 'n1'}},
-            symbol: 'a',
-        },
-        {
-            from: {state: {name: 'n1'}},
-            to: {state: {name: 'n2'}},
-            symbol: 'b',
-        },
-    ],
-    finalStates: [{name: 'n2'}],
-    initialState: {name: 'n0'}
-};
 
-
-runTest('simple', test => {
-    let automata = sequentialDeletion(new FA(abaababORbabORc), new FA(ab));
-    test.true(automata.accepts('b'));
-    test.true(automata.accepts('aabab'));
-    test.true(automata.accepts('abaab'));
-    test.false(automata.accepts('ab'));
+runTest('simple lpop', test => {
+    let automata = pop.lPop(new FA(abaababORbabORc),new FA(a));
+    test.true(automata.accepts('baabab'));
+    test.false(automata.accepts('bab'));
     test.false(automata.accepts('abaabab'));
+    test.false(automata.accepts('ab'));
+    test.false(automata.accepts('c'));
+});
+
+runTest('simple rpop', test => {
+    let automata = pop.rPop(new FA(abaababORbabORc),new FA(b));
+    test.true(automata.accepts('abaaba'));
+    test.true(automata.accepts('ba'));
+    test.false(automata.accepts('abaabab'));
+    test.false(automata.accepts('ab'));
     test.false(automata.accepts('c'));
 });

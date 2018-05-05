@@ -29,9 +29,9 @@ export default class State {
      */
     static createStates(plainStates: T_PlainState[]): { [key: string]: State } {
         let states = {};
-        _.each(plainStates, plainState => {
+        for (let plainState of plainStates){
             states[plainState.name] = new State(plainState);
-        });
+        }
         return states;
     }
 

@@ -36,6 +36,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+/**
+ * Průnik Konečného automatu
+ * @param {FA} left
+ * @param {FA} right
+ * @return {FA}
+ */
 function intersectionFA(left, right) {
     left = left.clone();
     right = right.clone();
@@ -66,83 +72,27 @@ function generateStates(lStates, rStates) {
         newInitial = void 0,
         statesByLeft = {},
         statesByRight = {};
-    _lodash2.default.each(lStates, function (lState) {
-        return _lodash2.default.each(rStates, function (rState) {
-            var merged = new _MergedState2.default(lState, rState);
-
-            newStates[merged.name] = merged;
-
-            if (merged.isFinal) newFinals[merged.name] = merged;
-            if (merged.isInitial) newInitial = merged;
-        });
-    });
-    return { newStates: newStates, newFinals: newFinals, newInitial: newInitial, statesByLeft: statesByLeft, statesByRight: statesByRight };
-}
-
-function generateRules(left, right, newStates) {
-    var lRules = left.rules,
-        rRules = right.rules;
-
-    var newRules = [];
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;
     var _iteratorError = undefined;
 
     try {
-        var _loop = function _loop() {
-            var mergedState = _step.value;
-
-            // console.log();
-            var filteredLRules = lRules.filter(function (rule) {
-                return rule.from.state.equals(mergedState.oldLeft);
-            });
-            // console.log();
+        for (var _iterator = (0, _object.objectValues)(lStates)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var lState = _step.value;
             var _iteratorNormalCompletion2 = true;
             var _didIteratorError2 = false;
             var _iteratorError2 = undefined;
 
             try {
-                var _loop2 = function _loop2() {
-                    var lRule = _step2.value;
+                for (var _iterator2 = (0, _object.objectValues)(rStates)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var rState = _step2.value;
 
-                    // console.log();
-                    var filteredRRules = rRules.filter(function (rule) {
-                        return rule.from.state.equals(mergedState.oldRight) && rule.symbol === lRule.symbol;
-                    });
-                    // console.log();
-                    var _iteratorNormalCompletion3 = true;
-                    var _didIteratorError3 = false;
-                    var _iteratorError3 = undefined;
+                    var merged = new _MergedState2.default(lState, rState);
 
-                    try {
-                        for (var _iterator3 = filteredRRules[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                            var rRule = _step3.value;
+                    newStates[merged.name] = merged;
 
-                            // console.log();
-                            newRules.push(new _Rule2.default({
-                                from: { state: mergedState },
-                                symbol: rRule.symbol,
-                                to: { state: newStates[_MergedState2.default.createName(lRule.to.state, rRule.to.state)] }
-                            }));
-                        }
-                    } catch (err) {
-                        _didIteratorError3 = true;
-                        _iteratorError3 = err;
-                    } finally {
-                        try {
-                            if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                                _iterator3.return();
-                            }
-                        } finally {
-                            if (_didIteratorError3) {
-                                throw _iteratorError3;
-                            }
-                        }
-                    }
-                };
-
-                for (var _iterator2 = filteredLRules[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                    _loop2();
+                    if (merged.isFinal) newFinals[merged.name] = merged;
+                    if (merged.isInitial) newInitial = merged;
                 }
             } catch (err) {
                 _didIteratorError2 = true;
@@ -158,10 +108,6 @@ function generateRules(left, right, newStates) {
                     }
                 }
             }
-        };
-
-        for (var _iterator = (0, _object.objectValues)(newStates)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            _loop();
         }
     } catch (err) {
         _didIteratorError = true;
@@ -174,6 +120,103 @@ function generateRules(left, right, newStates) {
         } finally {
             if (_didIteratorError) {
                 throw _iteratorError;
+            }
+        }
+    }
+
+    return { newStates: newStates, newFinals: newFinals, newInitial: newInitial, statesByLeft: statesByLeft, statesByRight: statesByRight };
+}
+
+function generateRules(left, right, newStates) {
+    var lRules = left.rules,
+        rRules = right.rules;
+
+    var newRules = [];
+    var _iteratorNormalCompletion3 = true;
+    var _didIteratorError3 = false;
+    var _iteratorError3 = undefined;
+
+    try {
+        var _loop = function _loop() {
+            var mergedState = _step3.value;
+
+            var filteredLRules = lRules.filter(function (rule) {
+                return rule.from.state.equals(mergedState.oldLeft);
+            });
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
+
+            try {
+                var _loop2 = function _loop2() {
+                    var lRule = _step4.value;
+
+                    var filteredRRules = rRules.filter(function (rule) {
+                        return rule.from.state.equals(mergedState.oldRight) && rule.symbol === lRule.symbol;
+                    });
+                    var _iteratorNormalCompletion5 = true;
+                    var _didIteratorError5 = false;
+                    var _iteratorError5 = undefined;
+
+                    try {
+                        for (var _iterator5 = filteredRRules[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                            var rRule = _step5.value;
+
+                            newRules.push(new _Rule2.default({
+                                from: { state: mergedState },
+                                symbol: rRule.symbol,
+                                to: { state: newStates[_MergedState2.default.createName(lRule.to.state, rRule.to.state)] }
+                            }));
+                        }
+                    } catch (err) {
+                        _didIteratorError5 = true;
+                        _iteratorError5 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                                _iterator5.return();
+                            }
+                        } finally {
+                            if (_didIteratorError5) {
+                                throw _iteratorError5;
+                            }
+                        }
+                    }
+                };
+
+                for (var _iterator4 = filteredLRules[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    _loop2();
+                }
+            } catch (err) {
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                        _iterator4.return();
+                    }
+                } finally {
+                    if (_didIteratorError4) {
+                        throw _iteratorError4;
+                    }
+                }
+            }
+        };
+
+        for (var _iterator3 = (0, _object.objectValues)(newStates)[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            _loop();
+        }
+    } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+    } finally {
+        try {
+            if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                _iterator3.return();
+            }
+        } finally {
+            if (_didIteratorError3) {
+                throw _iteratorError3;
             }
         }
     }

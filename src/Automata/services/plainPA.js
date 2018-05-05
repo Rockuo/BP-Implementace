@@ -40,7 +40,7 @@ function additionalPA(automata: PA, prefix: string, result: T_PlainPA) {
  * @return {Array}
  */
 function plainPARule(automata: PA, prefix: string) {
-    return _.map(automata.rules, rule => {
+    return automata.rules.map(rule => {
         return {
             from: {state: {name: prefix + rule.from.state.name}, stackTop: rule.from.stackTop},
             to: {state: {name: prefix + rule.to.state.name}, stackTop: rule.to.stackTop},

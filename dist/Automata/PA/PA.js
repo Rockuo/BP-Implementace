@@ -94,7 +94,7 @@ var PA = function (_Automata) {
     _createClass(PA, [{
         key: '_createRules',
         value: function _createRules(plainRules, states) {
-            return _lodash2.default.map(plainRules, function (plainRule) {
+            return plainRules.map(function (plainRule) {
                 return new _Rule2.default({
                     from: { state: states[plainRule.from.state.name], stackTop: plainRule.from.stackTop },
                     to: { state: states[plainRule.to.state.name], stackTop: plainRule.to.stackTop },

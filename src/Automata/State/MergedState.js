@@ -11,8 +11,8 @@ import State from "./State";
  * @property {State} oldRight
  */
 export default class MergedState extends State {
-    oldLeft: State;
-    oldRight: State;
+    oldLeft: State|MergedState;
+    oldRight: State|MergedState;
 
     /**
      * @param lState
@@ -34,7 +34,7 @@ export default class MergedState extends State {
      * @param rState
      * @return {string}
      */
-    static createName(lState: State, rState: State) {
-        return `${lState.name}-${rState.name}`;
+    static createName(lState: State|string, rState: State|string) {
+        return `${lState instanceof State?lState.name:lState}-${rState instanceof State?rState.name:rState}`;
     }
 };

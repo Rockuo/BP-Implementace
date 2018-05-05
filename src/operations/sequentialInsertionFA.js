@@ -35,7 +35,7 @@ export default function sequentialInserion(left: FA, right: FA): FA {
 
     return newAutomata;
 }
-
+    
 function createRules(left: FA, right: FA, newStates: { [key: string]: MergedState }): Rule[] {
     let newRules = [];
     for (let mergedState of objectValues(newStates)) {

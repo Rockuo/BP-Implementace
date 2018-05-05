@@ -107,7 +107,7 @@ export default class Automata {
      * @private
      */
     _findFinalStates(finalStates: T_PlainState[]): { [key: string]: State } {
-        let finalNames = _.map(finalStates, state => state.name);
+        let finalNames = finalStates.map((state:State)=> state.name);
         return _.pickBy(this.states, state => {
             if (finalNames.includes(state.name)) {
                 state.setAsFinal();
