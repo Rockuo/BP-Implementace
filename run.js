@@ -13,6 +13,7 @@ import sequentialDeletion from "./src/operations/sequentialDeletionFA";
 import complement from "./src/operations/complementFA";
 import interlacement from "./src/operations/interlacementFA";
 import {lPop, rPop} from "./src/operations/popFA";
+import Automata from "./src/Automata/Automata";
 
 let plainPA = {
     states: [{name: 's'}, {name: 'f'}],
@@ -472,12 +473,10 @@ let b = {
     initialState: {name: 'n0'}
 };
 
-let automata = rPop(new FA(abaababORbabORc),new FA(b));
-// automata.removeUnreachableStates();
-// automata.removeTrapStates();
-console.log(automata.accepts('abaaba'));
-console.log(automata.accepts('ba'));
-console.log(automata.accepts('abaabab'));
-console.log(automata.accepts('ab'));
-console.log(automata.accepts('c'));
-
+let ex;
+try {
+    new Automata();
+} catch (e) {
+    ex = e;
+}
+console.log(ex.text);

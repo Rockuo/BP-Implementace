@@ -2,6 +2,7 @@
 export class AbstractClassException extends Error {
     constructor(className: string) {
         super(`${className} is not instantiable`);
+        this.className = 'AbstractClassException';
     }
 }
 

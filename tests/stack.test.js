@@ -1,6 +1,5 @@
-require('babel-register');
 const runTest = require('ava');
-const Stack = require('../src/Automata/Stack').default;
+const Stack = require('../dist/Automata/Stack').default;
 
 
 runTest('simple', test => {

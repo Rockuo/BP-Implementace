@@ -6,10 +6,9 @@
   "scripts": {
     "test": "ava ./tests/*",
     "es6Test": "ava ./es6Tests/*",
-    "travisCoverage": "nyc npm run es6Test --reporter=text-lcov | coveralls",
-    "coverage": "nyc npm run es6Test",
+    "coverage": "nyc ava ./es6Tests/*",
     "build": "rm -r ./dist; babel src/ -d ./dist",
-    "testbuild": "npm run build && ava --verbose"
+    "testbuild": "npm run build && ava ./tests/* --verbose"
   },
   "repository": {
     "type": "git",

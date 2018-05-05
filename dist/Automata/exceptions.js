@@ -16,7 +16,10 @@ var AbstractClassException = exports.AbstractClassException = function (_Error) 
     function AbstractClassException(className) {
         _classCallCheck(this, AbstractClassException);
 
-        return _possibleConstructorReturn(this, (AbstractClassException.__proto__ || Object.getPrototypeOf(AbstractClassException)).call(this, className + ' is not instantiable'));
+        var _this = _possibleConstructorReturn(this, (AbstractClassException.__proto__ || Object.getPrototypeOf(AbstractClassException)).call(this, className + ' is not instantiable'));
+
+        _this.className = 'AbstractClassException';
+        return _this;
     }
 
     return AbstractClassException;
