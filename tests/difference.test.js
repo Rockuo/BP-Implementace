@@ -1,7 +1,12 @@
+let source = 'dist';
+if(+process.env.JS_VERSION === 6){
+    source = 'src';
+    require('babel-register');
+}
 const runTest = require('ava');
-const DFA = require("../dist/Automata/FA/DFA").default;
-const FA = require('../dist/Automata/FA/FA').default;
-const difference = require("../dist/operations/differenceFA").default;
+const DFA = require(`../${source}/Automata/FA/DFA`).default;
+const FA = require(`../${source}/Automata/FA/FA`).default;
+const difference = require(`../${source}/operations/differenceFA`).default;
 
 
 let aORb = {

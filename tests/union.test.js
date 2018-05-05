@@ -1,8 +1,13 @@
+let source = 'dist';
+if(+process.env.JS_VERSION === 6){
+    source = 'src';
+    require('babel-register');
+}
 const runTest = require('ava');
-const FA = require('../dist/Automata/FA/FA').default;
-const PA = require('../dist/Automata/PA/PA').default;
-const union = require('../dist/operations/union').default;
-const State = require("../dist/Automata/State/State").default;
+const FA = require(`../${source}/Automata/FA/FA`).default;
+const PA = require(`../${source}/Automata/PA/PA`).default;
+const union = require(`../${source}/operations/union`).default;
+const State = require(`../${source}/Automata/State/State`).default;
 
 
 let plain = {

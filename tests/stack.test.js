@@ -1,5 +1,10 @@
+let source = 'dist';
+if(+process.env.JS_VERSION === 6){
+    source = 'src';
+    require('babel-register');
+}
 const runTest = require('ava');
-const Stack = require('../dist/Automata/Stack').default;
+const Stack = require(`../${source}/Automata/Stack`).default;
 
 
 runTest('simple', test => {

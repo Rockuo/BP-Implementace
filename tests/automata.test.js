@@ -1,7 +1,14 @@
+let source = 'dist';
+if(+process.env.JS_VERSION === 6){
+    source = 'src';
+    require('babel-register');
+}
+
 const runTest = require('ava');
-const FA = require('../dist/Automata/FA/FA').default;
-const PA = require('../dist/Automata/PA/PA').default;
-const toPlain = require('../dist/Automata/services/plainFA_OR_PA').toPlain;
+const FA = require(`../${source}/Automata/FA/FA`).default;
+const PA = require(`../${source}/Automata/PA/PA`).default;
+const toPlain = require(`../${source}/Automata/services/plainFA_OR_PA`).toPlain;
+const _ = require('lodash');
 
 let plain = {
     states: [{name: 's'}, {name: 'f'}],
@@ -135,7 +142,7 @@ runTest('pushdownAutomata', test => {
 });
 
 
-runTest('pushdownAutomataCloned', test => {
+runTest('pushdownAutomataHandCloned', test => {
     let automata = new PA(toPlain(new PA(plainPA), '_'));
 
     test.is(Object.keys(automata.states).length, 2);
@@ -169,4 +176,10 @@ runTest('pushdownAutomataCloned', test => {
 
     test.is(automata.initialStackSymbol, 'S');
     test.deepEqual(automata.stackAlphabet, ['a', 'S']);
+});
+runTest('pushdownAutomataCloned', test => {
+    let automata = new PA(plainPA);
+    let clone= automata.clone();
+
+    test.true(_.isEqual(automata, clone))
 });

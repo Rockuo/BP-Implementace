@@ -1,6 +1,11 @@
+let source = 'dist';
+if(+process.env.JS_VERSION === 6){
+    source = 'src';
+    require('babel-register');
+}
 const runTest = require('ava');
-const FA = require('../dist/Automata/FA/FA').default;
-const shuffle = require("../dist/operations/shuffleFA").default;
+const FA = require(`../${source}/Automata/FA/FA`).default;
+const shuffle = require(`../${source}/operations/shuffleFA`).default;
 
 
 let simple1 = {

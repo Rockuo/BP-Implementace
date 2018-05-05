@@ -1,7 +1,12 @@
+let source = 'dist';
+if(+process.env.JS_VERSION === 6){
+    source = 'src';
+    require('babel-register');
+}
 const runTest = require('ava');
-const FA = require('../dist/Automata/FA/FA').default;
-const fullAlphabetDeletion = require("../dist/operations/fullAlphabetDeletionFA").default;
-const Alphabet = require("../dist/Automata/Alphabet").default;
+const FA = require(`../${source}/Automata/FA/FA`).default;
+const fullAlphabetDeletion = require(`../${source}/operations/fullAlphabetDeletionFA`).default;
+const Alphabet = require(`../${source}/Automata/Alphabet`).default;
 
 
 let plain1 = {
