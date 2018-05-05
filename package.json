@@ -6,7 +6,8 @@
   "scripts": {
     "test": "ava ./tests/*",
     "es6Test": "ava ./es6Tests/*",
-    "coverage": "npm run es6Test && nyc report --reporter=text-lcov | coveralls",
+    "travisCoverage": "npm run es6Test && nyc report --reporter=text-lcov | coveralls",
+    "coverage": "npm run es6Test",
     "build": "rm -r ./dist; babel src/ -d ./dist",
     "testbuild": "npm run build && ava --verbose"
   },
