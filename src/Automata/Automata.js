@@ -40,6 +40,7 @@ export default class Automata {
     _ignoreRules: { [key: string]: string };
 
     /**
+     * @param {T_PlainAutomata} settings
      */
     constructor(settings?: T_PlainAutomata) {
         if(this.constructor.name === 'Automata') {
@@ -50,6 +51,14 @@ export default class Automata {
         }
     }
 
+    /**
+     * @param {{}} states
+     * @param {{}} alphabet
+     * @param {{}} rules
+     * @param {{}} initialState
+     * @param {{}} finalStates
+     * @private
+     */
     _initFromPlain({states, alphabet, rules, initialState, finalStates}: T_PlainAutomata) {
         this.states = State.createStates(states);
         this.alphabet = new Alphabet(...alphabet);

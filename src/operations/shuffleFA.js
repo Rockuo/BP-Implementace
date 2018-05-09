@@ -31,28 +31,37 @@ export default function shuffle(left: FA, right: FA): ?FA {
     return automata;
 }
 
-function createRules(left: FA, right: FA, newStates:{ [key: string]: MergedState }): Rule[] {
+/**
+ * Generuje pravidla pro Shuffle
+ * @param {FA} left
+ * @param {FA} right
+ * @param {Object<MergedState>} newStates
+ * @return {Array}
+ */
+function createRules(left: FA, right: FA, newStates: { [key: string]: MergedState }): Rule[] {
     let newRules = [];
-    for (let newState:MergedState of objectValues(newStates)) {
-        let leftRules = left.rules.filter((rule:Rule) => rule.from.state.name === newState.oldLeft.name);
-        for (let rule:Rule of leftRules) {
+    //pro každý nový stav generujeme pravidla
+    for (let newState: MergedState of objectValues(newStates)) {
+        //generujeme pravidla z levého automatu
+        let leftRules = left.rules.filter((rule: Rule) => rule.from.state.name === newState.oldLeft.name);
+        for (let rule: Rule of leftRules) {
             newRules.push(new Rule({
-                from:{state:newState},
-                symbol:rule.symbol,
+                from: {state: newState},
+                symbol: rule.symbol,
                 to: {state: newStates[MergedState.createName(rule.to.state, newState.oldRight)]}
             }));
         }
 
-        let rightRules = right.rules.filter((rule:Rule) => rule.from.state.name === newState.oldRight.name);
-        for (let rule:Rule of rightRules) {
+        //generujeme pravidla z pravého automatu
+        let rightRules = right.rules.filter((rule: Rule) => rule.from.state.name === newState.oldRight.name);
+        for (let rule: Rule of rightRules) {
             newRules.push(new Rule({
-                from:{state:newState},
-                symbol:rule.symbol,
+                from: {state: newState},
+                symbol: rule.symbol,
                 to: {state: newStates[MergedState.createName(newState.oldLeft, rule.to.state)]}
             }));
         }
 
     }
-
     return newRules;
 }

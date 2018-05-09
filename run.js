@@ -14,6 +14,7 @@ import complement from "./src/operations/complementFA";
 import interlacement from "./src/operations/interlacementFA";
 import {lPop, rPop} from "./src/operations/popFA";
 import Automata from "./src/Automata/Automata";
+import union from "./src/operations/union";
 
 let plainPA = {
     states: [{name: 's'}, {name: 'f'}],
@@ -473,10 +474,30 @@ let b = {
     initialState: {name: 'n0'}
 };
 
-let ex;
-try {
-    new Automata();
-} catch (e) {
-    ex = e;
-}
-console.log(ex.text);
+plainPA = {
+    states: [{name: 's'}, {name: 'f'}],
+    alphabet: ['a'],
+    rules: [
+        {
+            from: {state: {name: 's'}, stackTop: 'S'},
+            to: {state: {name: 'f'}, stackTop: 'Sa'},
+            symbol: 'a',
+        },
+        {
+            from: {state: {name: 'f'}, stackTop: 'a'},
+            to: {state: {name: 'f'}, stackTop: ''},
+            symbol: 'a',
+        },
+        {
+            from: {state: {name: 'f'}, stackTop: 'S'},
+            to: {state: {name: 'f'}, stackTop: ''},
+            symbol: 'a',
+        }
+    ],
+    finalStates: [{name: 'f'}],
+    initialState: {name: 's'},
+    initialStackSymbol: 'S',
+    stackAlphabet: ['a', 'S']
+};
+// let test = {'true': console.log};
+

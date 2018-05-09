@@ -23,9 +23,23 @@ var Stack = function () {
 
     _createClass(Stack, [{
         key: 'peek',
+
+
+        /**
+         * Vrací vrchol zásobníku
+         * @return {string}
+         */
         value: function peek() {
             return this.stack[this.length - 1];
         }
+
+        /**
+         * Přepíše vrchop zásobníku, vrací true, pokud nedošlo k chybě
+         * @param {string} expectedTop
+         * @param {string} nextTop
+         * @return {boolean}
+         */
+
     }, {
         key: 'write',
         value: function write(expectedTop, nextTop) {

@@ -60,11 +60,7 @@ runTest('unionAutomata', test => {
 
     let unionAutomata = union(l_automata, r_automata);
 
-    test.is(Object.keys(unionAutomata.states).length, 6);
-    test.true(unionAutomata.states['s'].isInitial);
-    test.false(unionAutomata.states['s'].isFinal);
-    test.true(unionAutomata.states['f'].isFinal);
-    test.false(unionAutomata.states['f'].isInitial);
+    test.is(Object.keys(unionAutomata.states).length, 5);
 
     test.true(unionAutomata.states['l_s'] instanceof State);
     test.true(unionAutomata.states['l_f'] instanceof State);
@@ -74,28 +70,23 @@ runTest('unionAutomata', test => {
     test.is(unionAutomata.alphabet.length, 1);
     test.is(unionAutomata.alphabet[0], 'a');
 
-    test.is(Object.keys(unionAutomata.finalStates).length, 1);
-    test.true(!!unionAutomata.finalStates['f']);
+    test.is(Object.keys(unionAutomata.finalStates).length, 2);
 
-    test.is(unionAutomata.initialState.name, 's');
+    test.is(unionAutomata.initialState.name[0], 's');
 
-    test.is(unionAutomata.rules.length, 8);
-    test.is(unionAutomata.rules[0].from.state.name, 's');
+    test.is(unionAutomata.rules.length, 6);
+    test.is(unionAutomata.rules[0].from.state.name[0], 's');
     test.is(unionAutomata.rules[0].to.state.name, 'l_s');
-    test.is(unionAutomata.rules[1].from.state.name, 's');
+    test.is(unionAutomata.rules[1].from.state.name[0], 's');
     test.is(unionAutomata.rules[1].to.state.name, 'r_s');
-    test.is(unionAutomata.rules[2].from.state.name, 'l_f');
-    test.is(unionAutomata.rules[2].to.state.name, 'f');
-    test.is(unionAutomata.rules[3].from.state.name, 'r_f');
-    test.is(unionAutomata.rules[3].to.state.name, 'f');
-    test.is(unionAutomata.rules[4].from.state.name, 'l_s');
-    test.is(unionAutomata.rules[4].to.state.name, 'l_f');
-    test.is(unionAutomata.rules[5].from.state.name, 'l_f');
-    test.is(unionAutomata.rules[5].to.state.name, 'l_f');
-    test.is(unionAutomata.rules[6].from.state.name, 'r_s');
-    test.is(unionAutomata.rules[6].to.state.name, 'r_f');
-    test.is(unionAutomata.rules[7].from.state.name, 'r_f');
-    test.is(unionAutomata.rules[7].to.state.name, 'r_f');
+    test.is(unionAutomata.rules[2].from.state.name, 'l_s');
+    test.is(unionAutomata.rules[2].to.state.name, 'l_f');
+    test.is(unionAutomata.rules[3].from.state.name, 'l_f');
+    test.is(unionAutomata.rules[3].to.state.name, 'l_f');
+    test.is(unionAutomata.rules[4].from.state.name, 'r_s');
+    test.is(unionAutomata.rules[4].to.state.name, 'r_f');
+    test.is(unionAutomata.rules[5].from.state.name, 'r_f');
+    test.is(unionAutomata.rules[5].to.state.name, 'r_f');
 });
 
 
@@ -104,11 +95,9 @@ runTest('unionPA', test => {
 
     let unionAutomata = union(l_automata, r_automata, PA);
 
-    test.is(Object.keys(unionAutomata.states).length, 6);
-    test.true(unionAutomata.states['s'].isInitial);
-    test.false(unionAutomata.states['s'].isFinal);
-    test.true(unionAutomata.states['f'].isFinal);
-    test.false(unionAutomata.states['f'].isInitial);
+    test.is(Object.keys(unionAutomata.states).length, 5);
+    test.true(unionAutomata.states['l_f'].isFinal);
+    test.true(unionAutomata.states['r_f'].isFinal);
 
     test.true(unionAutomata.states['l_s'] instanceof State);
     test.true(unionAutomata.states['l_f'] instanceof State);
@@ -118,56 +107,44 @@ runTest('unionPA', test => {
     test.is(unionAutomata.alphabet.length, 1);
     test.is(unionAutomata.alphabet[0], 'a');
 
-    test.is(Object.keys(unionAutomata.finalStates).length, 1);
-    test.true(!!unionAutomata.finalStates['f']);
+    test.is(Object.keys(unionAutomata.finalStates).length, 2);
 
-    test.is(unionAutomata.initialState.name, 's');
+    test.is(unionAutomata.initialState.name[0], 's');
 
-    test.is(unionAutomata.rules.length, 10);
-    test.is(unionAutomata.rules[0].from.state.name, 's');
-    test.is(unionAutomata.rules[0].from.stackTop, '');
+    test.is(unionAutomata.rules.length, 8);
+    test.is(unionAutomata.rules[0].from.state.name[0], 's');
+    test.is(unionAutomata.rules[0].from.stackTop, 'S');
     test.is(unionAutomata.rules[0].to.state.name, 'l_s');
-    test.is(unionAutomata.rules[0].to.stackTop, '');
-    test.is(unionAutomata.rules[1].from.state.name, 's');
-    test.is(unionAutomata.rules[1].from.stackTop, '');
+    test.is(unionAutomata.rules[1].from.state.name[0], 's');
+    test.is(unionAutomata.rules[1].from.stackTop, 'S');
     test.is(unionAutomata.rules[1].to.state.name, 'r_s');
-    test.is(unionAutomata.rules[1].to.stackTop, '');
 
-    test.is(unionAutomata.rules[2].from.state.name, 'l_f');
-    test.is(unionAutomata.rules[2].from.stackTop, '');
-    test.is(unionAutomata.rules[2].to.state.name, 'f');
-    test.is(unionAutomata.rules[2].to.stackTop, '');
-    test.is(unionAutomata.rules[3].from.state.name, 'r_f');
-    test.is(unionAutomata.rules[3].from.stackTop, '');
-    test.is(unionAutomata.rules[3].to.state.name, 'f');
+    test.is(unionAutomata.rules[2].from.state.name, 'l_s');
+    test.is(unionAutomata.rules[2].from.stackTop, 'S');
+    test.is(unionAutomata.rules[2].to.state.name, 'l_f');
+    test.is(unionAutomata.rules[2].to.stackTop, 'Sa');
+    test.is(unionAutomata.rules[3].from.state.name, 'l_f');
+    test.is(unionAutomata.rules[3].from.stackTop, 'a');
+    test.is(unionAutomata.rules[3].to.state.name, 'l_f');
     test.is(unionAutomata.rules[3].to.stackTop, '');
-
-    test.is(unionAutomata.rules[4].from.state.name, 'l_s');
+    test.is(unionAutomata.rules[4].from.state.name, 'l_f');
     test.is(unionAutomata.rules[4].from.stackTop, 'S');
     test.is(unionAutomata.rules[4].to.state.name, 'l_f');
-    test.is(unionAutomata.rules[4].to.stackTop, 'Sa');
-    test.is(unionAutomata.rules[5].from.state.name, 'l_f');
-    test.is(unionAutomata.rules[5].from.stackTop, 'a');
-    test.is(unionAutomata.rules[5].to.state.name, 'l_f');
-    test.is(unionAutomata.rules[5].to.stackTop, '');
-    test.is(unionAutomata.rules[6].from.state.name, 'l_f');
-    test.is(unionAutomata.rules[6].from.stackTop, 'S');
-    test.is(unionAutomata.rules[6].to.state.name, 'l_f');
-    test.is(unionAutomata.rules[6].to.stackTop, '');
+    test.is(unionAutomata.rules[4].to.stackTop, '');
 
-    test.is(unionAutomata.rules[7].from.state.name, 'r_s');
+    test.is(unionAutomata.rules[5].from.state.name, 'r_s');
+    test.is(unionAutomata.rules[5].from.stackTop, 'S');
+    test.is(unionAutomata.rules[5].to.state.name, 'r_f');
+    test.is(unionAutomata.rules[5].to.stackTop, 'Sa');
+    test.is(unionAutomata.rules[6].from.state.name, 'r_f');
+    test.is(unionAutomata.rules[6].from.stackTop, 'a');
+    test.is(unionAutomata.rules[6].to.state.name, 'r_f');
+    test.is(unionAutomata.rules[6].to.stackTop, '');
+    test.is(unionAutomata.rules[7].from.state.name, 'r_f');
     test.is(unionAutomata.rules[7].from.stackTop, 'S');
     test.is(unionAutomata.rules[7].to.state.name, 'r_f');
-    test.is(unionAutomata.rules[7].to.stackTop, 'Sa');
-    test.is(unionAutomata.rules[8].from.state.name, 'r_f');
-    test.is(unionAutomata.rules[8].from.stackTop, 'a');
-    test.is(unionAutomata.rules[8].to.state.name, 'r_f');
-    test.is(unionAutomata.rules[8].to.stackTop, '');
-    test.is(unionAutomata.rules[9].from.state.name, 'r_f');
-    test.is(unionAutomata.rules[9].from.stackTop, 'S');
-    test.is(unionAutomata.rules[9].to.state.name, 'r_f');
-    test.is(unionAutomata.rules[9].to.stackTop, '');
+    test.is(unionAutomata.rules[7].to.stackTop, '');
 
-    test.is(unionAutomata.initialStackSymbol, '');
-    test.deepEqual(unionAutomata.stackAlphabet, ['a', 'S']);
+    test.is(unionAutomata.initialStackSymbol, 'S');
+    test.deepEqual(unionAutomata.stackAlphabet, ['S','a']);
 });

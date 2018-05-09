@@ -67,6 +67,10 @@ export default class PA extends Automata {
         }, true));
     }
 
+    /**
+     * Vrací kopii
+     * @return {PA}
+     */
     clone(){
         return new PA(toPlain(this));
     }

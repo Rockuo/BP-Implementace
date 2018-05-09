@@ -49,11 +49,26 @@ var FA = function (_Automata) {
         return _possibleConstructorReturn(this, (_ref = FA.__proto__ || Object.getPrototypeOf(FA)).call.apply(_ref, [this].concat(args)));
     }
 
+    /**
+     * Vrací kopii
+     * @return {FA}
+     */
+
+
     _createClass(FA, [{
         key: "clone",
         value: function clone() {
             return new FA((0, _plainFA.toPlain)(this));
         }
+
+        /**
+         * Vrací true, pokud je řetězec přijímán automatem
+         * @param {string} word
+         * @param {State} state
+         * @param {boolean} initialCall
+         * @return {boolean}
+         */
+
     }, {
         key: "accepts",
         value: function accepts(word) {

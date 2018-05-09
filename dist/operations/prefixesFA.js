@@ -9,15 +9,25 @@ var _FA = require('../Automata/FA/FA');
 
 var _FA2 = _interopRequireDefault(_FA);
 
-var _plainFA = require('../Automata/services/plainFA');
-
 var _object = require('../Automata/services/object');
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+ * Generuhe automat přijímající prefixy zadaného automatu
+ * @param {FA} automata
+ * @return {FA}
+ */
 function prefixes(automata) {
-    var resAutomata = new _FA2.default((0, _plainFA.toPlain)(automata));
-    resAutomata.removeTrapStates();
+    //vytvoříme nový automat ze starého
+    var resAutomata = automata.clone();
+    resAutomata.removeTrapStates(); //odstraníme uklízecí stavy
+
+    //všechny stavy se stávají koncovými
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;
     var _iteratorError = undefined;
@@ -43,6 +53,10 @@ function prefixes(automata) {
         }
     }
 
-    resAutomata.finalStates = resAutomata.states;
+    resAutomata.finalStates = _lodash2.default.clone(resAutomata.states);
+
+    //pro úhlednost přidáme uklízecí stav
+    resAutomata.ensureOneTrapState();
+
     return resAutomata;
 }

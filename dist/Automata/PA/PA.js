@@ -102,6 +102,12 @@ var PA = function (_Automata) {
                 }, true);
             });
         }
+
+        /**
+         * Vrací kopii
+         * @return {PA}
+         */
+
     }, {
         key: 'clone',
         value: function clone() {

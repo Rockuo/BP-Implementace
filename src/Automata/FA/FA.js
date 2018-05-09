@@ -18,10 +18,21 @@ export default class FA extends Automata{
         super(...args);
     }
 
+    /**
+     * Vrací kopii
+     * @return {FA}
+     */
     clone(){
         return new FA(toPlain(this));
     }
 
+    /**
+     * Vrací true, pokud je řetězec přijímán automatem
+     * @param {string} word
+     * @param {State} state
+     * @param {boolean} initialCall
+     * @return {boolean}
+     */
     accepts(word: string, state: State = this.initialState, initialCall:boolean = true): boolean {
         if (initialCall) {
             this._ignoreRules = {};

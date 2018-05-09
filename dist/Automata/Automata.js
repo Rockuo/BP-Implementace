@@ -53,6 +53,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var Automata = function () {
 
     /**
+     * @param {T_PlainAutomata} settings
      */
     function Automata(settings) {
         _classCallCheck(this, Automata);
@@ -64,6 +65,16 @@ var Automata = function () {
             this._initFromPlain(settings);
         }
     }
+
+    /**
+     * @param {{}} states
+     * @param {{}} alphabet
+     * @param {{}} rules
+     * @param {{}} initialState
+     * @param {{}} finalStates
+     * @private
+     */
+
 
     _createClass(Automata, [{
         key: '_initFromPlain',

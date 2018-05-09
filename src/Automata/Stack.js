@@ -16,10 +16,20 @@ export default class Stack {
         return this.stack.length;
     }
 
+    /**
+     * Vrací vrchol zásobníku
+     * @return {string}
+     */
     peek():string {
         return this.stack[this.length-1];
     }
 
+    /**
+     * Přepíše vrchop zásobníku, vrací true, pokud nedošlo k chybě
+     * @param {string} expectedTop
+     * @param {string} nextTop
+     * @return {boolean}
+     */
     write(expectedTop:string, nextTop:string):boolean {
         if(expectedTop !== ''){
             if(expectedTop === this.peek())

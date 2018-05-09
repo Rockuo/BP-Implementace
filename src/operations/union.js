@@ -3,65 +3,69 @@ import Automata from '../Automata/Automata';
 import {toPlainLeft, toPlainRight} from '../Automata/services/plainFA_OR_PA';
 import PA from "../Automata/PA/PA";
 import FA from "../Automata/FA/FA";
-
-import type {T_PlainAutomata} from '../Automata/Automata';
 import type {T_PlainPA} from '../Automata/PA/PA';
 import type {T_AnyPlainAutomata} from '../Automata/services/plainFA_OR_PA';
 import {overload} from "../Automata/services/overload";
+import State from "../Automata/State/State";
 
-
-
-
-
-    /**
-     *
-     * @param  Left
-     * @param  Right
-     * @param automataType
-     */
-export default function union(Left:(Automata|PA|FA), Right:(Automata|PA|FA)) {
+/**
+ * Sjednocení dvou Automatů
+ * @param {Automata} left
+ * @param  {Automata} right
+ * @return Automata
+ */
+export default function union(left: (Automata | PA | FA), right: (Automata | PA | FA)) {
+    //Nejprve řekneme Flow, o jak datový tym se jedná (Flow v tomto případě nezvládá přetypování samo)
     // $FlowFixMe
-    Left = (Left:(Left.constructor));
+    left = (left: (left.constructor));
     // $FlowFixMe
-    Right = (Right:(Right.constructor));
+    right = (right: (right.constructor));
 
-    let plainLeft:T_AnyPlainAutomata = toPlainLeft(Left), plainRight:T_AnyPlainAutomata = toPlainRight(Right);
-    // přidání pravidel s prázdnými přechody
-    let rules = [
-        {from: {state:{name:'s'}}, to: {state: {name: plainLeft.initialState.name}}, symbol: ''},
-        {from: {state:{name:'s'}}, to: {state: {name: plainRight.initialState.name}}, symbol: ''},
-    ];
-    for (let finalState of [...plainLeft.finalStates, ...plainRight.finalStates]) {
-        rules.push({
-            from: {state:{name: finalState.name}},
-            to: {state: {name:'f'}},
-            symbol: ''
-        });
-    }
+    //Převedeme si automat na jeho serializovatelnou reprezentaci
+    let plainLeft: T_AnyPlainAutomata = toPlainLeft(left), plainRight: T_AnyPlainAutomata = toPlainRight(right);
 
-    let plainUnion = {
-        states: [{name: 's'}, {name: 'f'}, ...plainLeft.states, ...plainRight.states],
+    // suffix pro nové stavy
+    let suffix = State.randomName();
+
+
+    //sestrojíme automat
+    let plainUnion:T_AnyPlainAutomata = {
+        states: [{name: 's' + suffix}, ...plainLeft.states, ...plainRight.states],
         alphabet: [...plainLeft.alphabet, ...plainRight.alphabet],
-        rules: [...rules, ...plainLeft.rules, ...plainRight.rules],
-        finalStates: [{name: 'f'}],
-        initialState: {name: 's'}
+        finalStates: [...plainLeft.finalStates, ...plainRight.finalStates],
+        initialState: {name: 's' + suffix}
     };
 
-    let paFun = (l,r) => {additional(l,r,plainUnion)};
-    overload(
+    // wrapper pro předávání parametrů
+    let paFun = () => additionalPA(plainLeft, plainRight, plainUnion, suffix);
+    // wrapper pro předávání parametrů
+    let faFun = () => additionalFA(plainLeft, plainRight, plainUnion, suffix);
+
+    // Nastavíme jaká funkce se má volat pro kterou kombinaci automatů
+    //v tomto případě, pokud je jeden z automatů Zásobníkový, používáme funkci additionalPA
+    return overload(
         [
-            {parameters: [{value: Left, type: FA}, {value: Right, type: PA}], func: paFun},
-            {parameters: [{value: Left, type: PA}, {value: Right, type: FA}], func: paFun},
-            {parameters: [{value: Left, type: PA}, {value: Right, type: PA}], func: paFun},
-            {parameters: [{value: Left, type: FA}, {value: Right, type: FA}], func: ()=>{}},
+            {parameters: [{value: left, type: FA}, {value: right, type: PA}], func: paFun},
+            {parameters: [{value: left, type: PA}, {value: right, type: FA}], func: paFun},
+            {parameters: [{value: left, type: PA}, {value: right, type: PA}], func: paFun},
+            {parameters: [{value: left, type: FA}, {value: right, type: FA}], func: faFun},
         ]
     );
-
-    return new Left.constructor(plainUnion);
 }
 
-
-function additional(plainLeft: T_AnyPlainAutomata, plainRight: T_AnyPlainAutomata, plainUnion: T_AnyPlainAutomata) {
+/**
+ * Provede akce specifické pro zásobníkový automat
+ * @param plainLeft
+ * @param plainRight
+ * @param plainUnion
+ * @param suffix
+ */
+function additionalPA(
+    plainLeft: T_AnyPlainAutomata,
+    plainRight: T_AnyPlainAutomata,
+    plainUnion: T_AnyPlainAutomata,
+    suffix: string
+) {
     // $FlowFixMe
     plainLeft = (plainLeft: T_PlainPA);
     // $FlowFixMe
@@ -69,7 +73,44 @@ function additional(plainLeft: T_AnyPlainAutomata, plainRight: T_AnyPlainAutomat
     // $FlowFixMe
     plainUnion = (plainUnion: T_PlainPA);
 
-    plainUnion.initialStackSymbol = '';
-    plainUnion.stackAlphabet = [...plainLeft.stackAlphabet, ...plainRight.stackAlphabet];
+    // nastavíme
+    plainUnion.initialStackSymbol = 'S';
+    plainUnion.stackAlphabet = ['S', ...plainLeft.stackAlphabet, ...plainRight.stackAlphabet];
+    // Přidáme pravidla z nového počátečního stavu do původních počátečních stavů
+    let rules = [
+        {
+            from: {state: {name: 's' + suffix}, stackTop: 'S'},
+            to: {state: {name: plainLeft.initialState.name},stackTop: plainLeft.initialStackSymbol},
+            symbol: ''
+        },
+        {
+            from: {state: {name: 's' + suffix}, stackTop: 'S'},
+            to: {state: {name: plainRight.initialState.name},stackTop: plainLeft.initialStackSymbol},
+            symbol: ''
+        },
+    ];
+    plainUnion.rules = [...rules, ...plainLeft.rules, ...plainRight.rules];
+    return new PA(plainUnion);
+}
 
+/**
+ * Provede akce specifické pro konečný automat
+ * @param plainLeft
+ * @param plainRight
+ * @param plainUnion
+ * @param suffix
+ */
+function additionalFA(
+    plainLeft: T_AnyPlainAutomata,
+    plainRight: T_AnyPlainAutomata,
+    plainUnion: T_AnyPlainAutomata,
+    suffix: string
+) {
+    // Přidáme pravidla z nového počátečního stavu do původních počátečních stavů
+    let rules = [
+        {from: {state: {name: 's' + suffix}}, to: {state: {name: plainLeft.initialState.name}}, symbol: ''},
+        {from: {state: {name: 's' + suffix}}, to: {state: {name: plainRight.initialState.name}}, symbol: ''},
+    ];
+    plainUnion.rules = [...rules, ...plainLeft.rules, ...plainRight.rules];
+    return new FA(plainUnion);
 }
