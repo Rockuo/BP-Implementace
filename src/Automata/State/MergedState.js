@@ -3,6 +3,7 @@ import State from "./State";
 
 
 /**
+ * Stav spojený ze dvou jiných stavů (které ve výsledném automatu být mohou/nemusí)
  * @type {State}
  * @property {string} name
  * @property {boolean} isInitial

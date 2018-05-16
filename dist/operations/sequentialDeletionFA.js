@@ -86,7 +86,7 @@ function sequentialDeletion(left, right) {
 
     var copyLeftStates = (0, _object.objectValues)(copyLeft.states);
 
-    //pro všechny kombinace q a q' jako počáteční a koncový stav si přidáme # pravidla do levého automatu
+    //pro všechny kombinace q a q' jako počáteční a koncový stav si přidáme # přechody do levého automatu
     // (levý automat se tak rovnou stává i automatem v teorii jako M')
     var _iteratorNormalCompletion2 = true;
     var _didIteratorError2 = false;
@@ -193,7 +193,7 @@ function specialRulesToResultAutomata(left, right, specialSymbol) {
     finalState.isFinal = true;
     sigmaIterSpecialSigmaIter.finalStates = _defineProperty({}, finalState.name, finalState);
 
-    // vytvoříme pravidla
+    // vytvoříme přechody
     sigmaIterSpecialSigmaIter.rules = [new _Rule2.default({
         from: { state: initState },
         to: { state: finalState },

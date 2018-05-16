@@ -31,6 +31,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+/**
+ * Paralelní vkládání
+ * @param {FA} left
+ * @param {FA} right
+ * @return {FA}
+ */
 function parallelInsertion(left, right) {
     left = left.clone();
     right = right.clone();
@@ -57,6 +63,13 @@ function parallelInsertion(left, right) {
     return newAutomata;
 }
 
+/**
+ * Generuje pravidla pro paralelní vkládání
+ * @param left
+ * @param right
+ * @param newStates
+ * @return {Array}
+ */
 function createRules(left, right, newStates) {
     var newRules = [];
     var _iteratorNormalCompletion = true;
@@ -67,7 +80,7 @@ function createRules(left, right, newStates) {
         var _loop = function _loop() {
             var mergedState = _step.value;
 
-
+            // pokud jsme v koncovém stavu levého automatu, přidáme přechody z levého automatu
             if (mergedState.oldRight.isFinal) {
                 newRules = left.rules.filter(function (rule) {
                     return rule.from.state.name === mergedState.oldLeft.name;
@@ -79,7 +92,7 @@ function createRules(left, right, newStates) {
                     });
                 }).concat(newRules);
             }
-
+            // přidáme přechody z pravého automatu
             newRules = right.rules.filter(function (rule) {
                 return rule.from.state.name === mergedState.oldRight.name;
             }).map(function (rule) {

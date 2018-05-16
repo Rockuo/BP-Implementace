@@ -1,11 +1,11 @@
 {
   "name": "bp-implementace",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "run.js",
   "scripts": {
-    "test": "ava",
-    "es6Test": "JS_VERSION=\"6\" ava",
+    "test": "ava --verbose",
+    "es6Test": "JS_VERSION=\"6\" ava --verbose",
     "coverage": "nyc npm run es6Test",
     "build": "rm -r ./dist; babel src/ -d ./dist",
     "testbuild": "npm run build && ava --verbose",
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/Rockuo/BP-Implementace#readme",
   "dependencies": {
-    "lodash": "^4.17.5"
+    "lodash": "^4.17.10"
   },
   "devDependencies": {
     "ava": "1.0.0-beta.3",
@@ -33,7 +33,7 @@
     "babel-register": "^6.26.0",
     "coveralls": "^3.0.1",
     "flow-bin": "^0.67.1",
-    "nyc": "^11.7.1"
+    "nyc": "^11.7.3"
   },
   "ava": {
     "babel": {

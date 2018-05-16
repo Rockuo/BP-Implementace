@@ -59,7 +59,7 @@ function shuffle(left, right) {
 }
 
 /**
- * Generuje pravidla pro Shuffle
+ * Generuje přechody pro Shuffle
  * @param {FA} left
  * @param {FA} right
  * @param {Object<MergedState>} newStates
@@ -67,7 +67,7 @@ function shuffle(left, right) {
  */
 function createRules(left, right, newStates) {
     var newRules = [];
-    //pro každý nový stav generujeme pravidla
+    //pro každý nový stav generujeme přechody
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;
     var _iteratorError = undefined;
@@ -76,7 +76,7 @@ function createRules(left, right, newStates) {
         var _loop = function _loop() {
             var newState = _step.value;
 
-            //generujeme pravidla z levého automatu
+            //generujeme přechody z levého automatu
             var leftRules = left.rules.filter(function (rule) {
                 return rule.from.state.name === newState.oldLeft.name;
             });
@@ -95,7 +95,7 @@ function createRules(left, right, newStates) {
                     }));
                 }
 
-                //generujeme pravidla z pravého automatu
+                //generujeme přechody z pravého automatu
             } catch (err) {
                 _didIteratorError2 = true;
                 _iteratorError2 = err;

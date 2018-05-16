@@ -89,7 +89,7 @@ function additionalPA(plainLeft, plainRight, plainUnion, suffix) {
     // nastavíme
     plainUnion.initialStackSymbol = 'S';
     plainUnion.stackAlphabet = ['S'].concat(_toConsumableArray(plainLeft.stackAlphabet), _toConsumableArray(plainRight.stackAlphabet));
-    // Přidáme pravidla z nového počátečního stavu do původních počátečních stavů
+    // Přidáme přechody z nového počátečního stavu do původních počátečních stavů
     var rules = [{
         from: { state: { name: 's' + suffix }, stackTop: 'S' },
         to: { state: { name: plainLeft.initialState.name }, stackTop: plainLeft.initialStackSymbol },
@@ -111,7 +111,7 @@ function additionalPA(plainLeft, plainRight, plainUnion, suffix) {
  * @param suffix
  */
 function additionalFA(plainLeft, plainRight, plainUnion, suffix) {
-    // Přidáme pravidla z nového počátečního stavu do původních počátečních stavů
+    // Přidáme přechody z nového počátečního stavu do původních počátečních stavů
     var rules = [{ from: { state: { name: 's' + suffix } }, to: { state: { name: plainLeft.initialState.name } }, symbol: '' }, { from: { state: { name: 's' + suffix } }, to: { state: { name: plainRight.initialState.name } }, symbol: '' }];
     plainUnion.rules = [].concat(rules, _toConsumableArray(plainLeft.rules), _toConsumableArray(plainRight.rules));
     return new _FA2.default(plainUnion);

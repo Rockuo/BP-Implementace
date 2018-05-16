@@ -34,7 +34,7 @@ export default function sequentialDeletion(left: FA, right: FA, specialSymbol: s
     //převedeme stavy do pole
     let copyLeftStates = objectValues(copyLeft.states);
 
-    //pro všechny kombinace q a q' jako počáteční a koncový stav si přidáme # pravidla do levého automatu
+    //pro všechny kombinace q a q' jako počáteční a koncový stav si přidáme # přechody do levého automatu
     // (levý automat se tak rovnou stává i automatem v teorii jako M')
     for (let newInitialState: State of copyLeftStates) {
         for (let newFinalState: State of copyLeftStates) {
@@ -98,7 +98,7 @@ export function specialRulesToResultAutomata(left: FA, right: FA, specialSymbol:
     finalState.isFinal = true;
     sigmaIterSpecialSigmaIter.finalStates = {[finalState.name]: finalState};
 
-    // vytvoříme pravidla
+    // vytvoříme přechody
     sigmaIterSpecialSigmaIter.rules = [new Rule({
         from: {state: initState},
         to: {state: finalState},

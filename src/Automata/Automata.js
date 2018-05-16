@@ -23,6 +23,7 @@ export type T_PlainAutomata = {
 };
 
 /**
+ * Třída reprezentující automat
  * @abstract
  * @type {Automata}
  * @property {{name:State}} states
@@ -32,43 +33,56 @@ export type T_PlainAutomata = {
  * @property {{name:State}} finalStates
  */
 export default class Automata {
+    /** Stavy dle jména */
     states: { [key: string]: State };
+    /** Abeceda (unikátní)*/
     alphabet: Alphabet;
+    /** Pole pravidel */
     rules: Rule[];
+    /** Počáteční stav*/
     initialState: State;
+    /** Koncové stavy dle jména*/
     finalStates: { [key: string]: State };
+    /**
+     * Objekt pravidel která se mají ignorovat
+     * @protected
+     */
     _ignoreRules: { [key: string]: string };
 
     /**
      * @param {T_PlainAutomata} settings
      */
     constructor(settings?: T_PlainAutomata) {
+        // tato třída je abstraktní, je li instancializována přímo, => vyjímka
         if(this.constructor.name === 'Automata') {
             throw new AbstractClassException(this.constructor.name)
         }
+        // pokud není dle čeho instancializovat, vytváříme prázdný
         if (settings) {
             this._initFromPlain(settings);
         }
     }
 
     /**
-     * @param {{}} states
-     * @param {{}} alphabet
-     * @param {{}} rules
-     * @param {{}} initialState
-     * @param {{}} finalStates
+     * Overridnutelná metoda pro vytvoření automatu ze zadaného objektu
+     * @param {T_PlainState[]} states
+     * @param {string[]} alphabet
+     * @param {T_PlainRule[]} rules
+     * @param {T_PlainState} initialState
+     * @param {T_PlainState[]} finalStates
      * @private
      */
     _initFromPlain({states, alphabet, rules, initialState, finalStates}: T_PlainAutomata) {
         this.states = State.createStates(states);
         this.alphabet = new Alphabet(...alphabet);
         this.rules = this._createRules(rules, this.states);
-        this.initialState = this._findInitialState(initialState.name);
+        this.initialState = this.states[initialState.name];
+        this.initialState.setAsInitial();
         this.finalStates = this._findFinalStates(finalStates);
     }
 
     /**
-     *
+     * Overridnutelná metoda pro vytvoření pravidel ze zadaného čistého objektu pravidel a stavů
      * @param {array} plainRules
      * @param states
      */
@@ -81,36 +95,26 @@ export default class Automata {
     }
 
     /**
-     *
-     * @param {string} name
-     */
-    _findInitialState(name: string): State {
-        return objectValues(this.states).find(state => {
-            if (state.name === name) {
-                state.setAsInitial();
-                return true;
-            }
-            return false;
-        });
-    }
-
-    /**
-     * Vynutí, aby byl pouze jeden konečný stav
+     * Vynutí, aby byl pouze jeden koncový stav
      */
     forceOneFinalState() {
+        // vytvoří nový konecný stav
         let newFinalState = new State({
             name: 'F-' + objectValues(this.finalStates).map((state: State) => state.name).join('-'),
             isFinal: true
         });
+        // všechny původní koncové stavy nastaví jako nekoncové a vytvoří z nich epsilon přechod no nového koncového stavu
         for (let state of objectValues(this.finalStates)) {
             state.isFinal = false;
             this.rules.push(new Rule({from: {state}, to: {state: newFinalState}, symbol: ''}))
         }
+        //přidá koncový stav
         this.finalStates = {[newFinalState.name]: newFinalState};
         this.states[newFinalState.name] = newFinalState;
     }
 
-    /**,
+    /**
+     * Najde reference na koncové stavy dle jejich prosté reprezentace
      * @param {array} finalStates
      * @returns {object}
      * @private
@@ -152,6 +156,10 @@ export default class Automata {
         this.states[this.initialState.name] = this.initialState;
     }
 
+    /**
+     * Odstraní přechody pro která neexistují stavy
+     * @private
+     */
     _removeUnattachedRules() {
         let newRules = [];
         let states = objectValues(this.states);
@@ -166,7 +174,11 @@ export default class Automata {
         this.rules = newRules;
     }
 
-
+    /**
+     * Odstraní nedostupné stavy
+     * @param {State[]} reachables
+     * @private
+     */
     _removeUnreachableStates(reachables: State[] = [this.initialState]) {
         for (let reachable of reachables) {
             let newReachable = this.rules
@@ -183,7 +195,11 @@ export default class Automata {
         }
     }
 
-
+    /**
+     * Odstraní stavy ze kterých není možné se dostat do koncového
+     * @param useful
+     * @private
+     */
     _removeTrapStates(useful: State[]) {
         for (let finalState of (useful: State[])) {
             let newUseful = this.rules
@@ -200,6 +216,13 @@ export default class Automata {
         }
     }
 
+    /**
+     * Najde přechod ze stavu "from" pomocí symbolu "symbol"
+     * @param {State} from
+     * @param {string} symbol
+     * @return {Rule<>[]}
+     * @private
+     */
     _findRules(from: State, symbol?: (string|void) = undefined): Rule[] {
         return this.rules
             .filter((rule: Rule) => !(this._ignoreRules[rule.from.state.name] === rule.symbol))
@@ -208,14 +231,23 @@ export default class Automata {
     }
 
     /**
-     * ajistí právě jeden uklízecí stav
+     * Zajistí právě jeden uklízecí stav
      */
     ensureOneTrapState() {
+        //odstraní všechny "uklízecí" stavy
         this.removeTrapStates();
+
+        //vytvoří nový "uklízecí stav"
         let cleanState = new State({
             name: `clean(id_${State.randomName()})`
         });
+        // přidá nový stav
         this.states[cleanState.name] = cleanState;
+
+        /*
+            Pro všechny stavy najdeme symboly pro které neexistují přechody z daného stavu
+            Následě vytvoříme přechody z daného stavu pomocí daného symbolu do nového stavu clean(id_...)
+         */
         for (let state of objectValues(this.states)) {
             let existingSymbols = this._findRules(state).map((rule: Rule) => rule.symbol);
             for (let symbol of this.alphabet) {
@@ -224,20 +256,30 @@ export default class Automata {
                 }
             }
         }
+        // pro každý symbol cyklíme v uklízecím stavu
         for (let symbol of this.alphabet) {
             this.rules.push(new Rule({from: {state: cleanState}, to: {state: cleanState}, symbol}));
         }
     }
 
+    /**
+     * Sleduje epsilon přechody z daného stavu a přepisuje je na přechody z cílového stavu epsilon přechodu
+     * (byl-li cílový stav koncový, nastaví tento stav jako koncový)
+     * @param state
+     * @private
+     */
     _followEmptyRules(state: State) {
         let found;
         do {
             let emptyRules = this._findRules(state, '');
             found = !!emptyRules.length;
             for (let emptyRule of emptyRules) {
+                //odstraní epsilon přechod
                 _.remove(this.rules, (rule: Rule) => rule.equals(emptyRule));
+                //pro všechny přechody z cílového stavu
                 let nextStateRules = this._findRules(emptyRule.to.state);
                 for (let nextStateRule of nextStateRules) {
+                    // se přidají přechody do původního stavu   
                     this.rules.push(new Rule({
                         from: {state: state},
                         symbol: nextStateRule.symbol,
@@ -248,11 +290,12 @@ export default class Automata {
                     state.isFinal = true
                 }
             }
+        // pokud byly nalezen prázný přechod, hledej znovu v nových přepsaných přechodech
         } while (found)
     }
 
     /**
-     * Odstraní sigma pravidla
+     * Odstraní epsilon přechody
      */
     removeEmptyRules() {
         //vyčstíme si ignore rules (jen pro jistotu)

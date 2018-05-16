@@ -35,10 +35,18 @@ export default function sequentialInserion(left: FA, right: FA): FA {
 
     return newAutomata;
 }
-    
+
+/**
+ * Generuje přechody pro sekvenční vkládání
+ * @param {FA} left
+ * @param {FA} right
+ * @param {{}} newStates
+ * @return {Array}
+ */
 function createRules(left: FA, right: FA, newStates: { [key: string]: MergedState }): Rule[] {
     let newRules = [];
     for (let mergedState of objectValues(newStates)) {
+        // pravidla levého automatu se přiřazují, jen pokud je pravý v počátečním nebo koncovém stavu
         if (mergedState.oldRight.isFinal || mergedState.oldRight.isInitial) {
             newRules = left.rules
                 .filter((rule: Rule) => rule.from.state.name === mergedState.oldLeft.name)
@@ -50,6 +58,7 @@ function createRules(left: FA, right: FA, newStates: { [key: string]: MergedStat
                 .concat(newRules);
         }
 
+        //pravidla pravého se pužijí, pokud pravý není na konci
         if (!mergedState.oldRight.isFinal) {
             newRules = right.rules
                 .filter((rule: Rule) => rule.from.state.name === mergedState.oldRight.name)

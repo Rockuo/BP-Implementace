@@ -77,7 +77,9 @@ var DFA = function (_FA) {
         value: function _ensureDFA() {
             var _this2 = this;
 
+            //odstraní prázdné přechody
             this.removeEmptyRules();
+
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
             var _iteratorError = undefined;
@@ -93,17 +95,24 @@ var DFA = function (_FA) {
                         var _loop = function _loop() {
                             var symbol = _step2.value;
 
+                            //přechoy z "state" stav pomocí pomocí "symbol"
                             var nonDeterministicRules = _this2._findRules(state, symbol);
                             if (nonDeterministicRules.length < 2) return "continue";
 
+                            //existuje více jak jedno pravídlo pro tento stav a symbol
+
+                            //odstraní první přechodo
                             var ndRule1 = nonDeterministicRules.shift();
                             _lodash2.default.remove(_this2.rules, function (rule) {
                                 return rule.equals(ndRule1);
                             });
 
+                            //inicializuje z čeho se bude zkládat nový mergnutý stav
                             var newState = ndRule1.to.state;
+                            // zapamatuje si přechody které jsou třeba přidat pro nový stav
                             var rulesToAdd = _this2._findRules(ndRule1.to.state);
 
+                            // opakuje předhozí kroky pro ostatní přechody
                             var _iteratorNormalCompletion3 = true;
                             var _didIteratorError3 = false;
                             var _iteratorError3 = undefined;
@@ -122,6 +131,8 @@ var DFA = function (_FA) {
                                 for (var _iterator3 = nonDeterministicRules[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                                     _loop2();
                                 }
+
+                                //přidá nový stav
                             } catch (err) {
                                 _didIteratorError3 = true;
                                 _iteratorError3 = err;
@@ -139,6 +150,7 @@ var DFA = function (_FA) {
 
                             _this2.states[newState.name] = newState;
 
+                            // přidá přechody z nového stavu
                             var _iteratorNormalCompletion4 = true;
                             var _didIteratorError4 = false;
                             var _iteratorError4 = undefined;
@@ -149,6 +161,7 @@ var DFA = function (_FA) {
 
                                     _this2.rules.push(new _Rule2.default({ from: { state: newState }, symbol: rule.symbol, to: rule.to }));
                                 }
+                                // přidá přechod DO nového stavu
                             } catch (err) {
                                 _didIteratorError4 = true;
                                 _iteratorError4 = err;
@@ -187,6 +200,7 @@ var DFA = function (_FA) {
                         }
                     }
                 }
+                //odstraní přebytečné stavy
             } catch (err) {
                 _didIteratorError = true;
                 _iteratorError = err;

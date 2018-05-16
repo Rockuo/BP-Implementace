@@ -40,14 +40,16 @@ function overload(options) {
                 for (var _iterator2 = option.parameters[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                     var param = _step2.value;
 
+                    //pokud zadaný typ pro přetečení neodpovídá
                     if (param.value.constructor !== param.type) {
-                        continue optionEach;
+                        continue optionEach; // continue pro hlavní cyklus
                     }
                     var val = param.value;
 
                     val = val;
                     paramsToUse.push(val);
                 }
+                // odpovídají datové typy, voláme callback
             } catch (err) {
                 _didIteratorError2 = true;
                 _iteratorError2 = err;
@@ -79,6 +81,8 @@ function overload(options) {
             }
         }
     }
+    //nebylo nalezeno přetečení
+
 
     throw new _exceptions.OverloadException();
 }

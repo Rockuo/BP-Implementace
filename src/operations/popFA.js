@@ -8,6 +8,15 @@ import intersectionFA from "./intersectionFA";
 import {toPlain} from "../Automata/services/plainFA";
 import {specialRulesToResultAutomata} from "./sequentialDeletionFA";
 
+/**
+ * Pop zprava
+ * Operace dělá obdobnou práci jako sekvenční mazání, až na to, že při hledání průniků jsou hledány jen ty kde
+ * dotyčná část levého automatu končí v koncovém stavu
+ * @param {FA} left
+ * @param {FA} right
+ * @param {string} specialSymbol
+ * @return {FA}
+ */
 export function rPop(left: FA, right: FA, specialSymbol: string = '#'): FA {
     left = left.clone();
     right = right.clone();
@@ -45,6 +54,15 @@ export function rPop(left: FA, right: FA, specialSymbol: string = '#'): FA {
     return specialRulesToResultAutomata(left,right,specialSymbol)
 }
 
+/**
+ * Pop zleva
+ * Operace dělá obdobnou práci jako sekvenční mazání, až na to, že při hledání průniků jsou hledány jen ty kde
+ * dotyčná část levého automatu začíná v počátečním stavu
+ * @param {FA} left
+ * @param {FA} right
+ * @param {string} specialSymbol
+ * @return {FA}
+ */
 export function lPop(left: FA, right: FA, specialSymbol: string = '#'): FA {
     left = left.clone();
     right = right.clone();

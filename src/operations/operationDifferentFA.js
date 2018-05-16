@@ -5,7 +5,7 @@ import intersectionFA from "./intersectionFA";
 import FA from "../Automata/FA/FA";
 
 /**
- *
+ * Operace Different
  * @param  left
  * @param  right
  */

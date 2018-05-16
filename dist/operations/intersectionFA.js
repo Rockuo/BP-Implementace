@@ -45,6 +45,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 function intersectionFA(left, right) {
     left = left.clone();
     right = right.clone();
+    //odstraníme prázdné přechody aabychom na ně nemuseli brát ohled
     left.removeEmptyRules();
     right.removeEmptyRules();
 
@@ -66,6 +67,12 @@ function intersectionFA(left, right) {
     return newAutomata;
 }
 
+/**
+ * Zkombinuje stavy levého a pravého automatu L X Y (karézský součin)
+ * @param lStates
+ * @param rStates
+ * @return {{newStates, newFinals, newInitial: *, statesByLeft, statesByRight}}
+ */
 function generateStates(lStates, rStates) {
     var newStates = {},
         newFinals = {},
@@ -127,6 +134,13 @@ function generateStates(lStates, rStates) {
     return { newStates: newStates, newFinals: newFinals, newInitial: newInitial, statesByLeft: statesByLeft, statesByRight: statesByRight };
 }
 
+/**
+ * VYgeneruje pravidla pro průnik
+ * @param left
+ * @param right
+ * @param newStates
+ * @return {Array}
+ */
 function generateRules(left, right, newStates) {
     var lRules = left.rules,
         rRules = right.rules;
@@ -140,6 +154,7 @@ function generateRules(left, right, newStates) {
         var _loop = function _loop() {
             var mergedState = _step3.value;
 
+            // filtr na přechody levého automatu
             var filteredLRules = lRules.filter(function (rule) {
                 return rule.from.state.equals(mergedState.oldLeft);
             });
@@ -151,9 +166,11 @@ function generateRules(left, right, newStates) {
                 var _loop2 = function _loop2() {
                     var lRule = _step4.value;
 
+                    // filtr na přechody pravého automatu
                     var filteredRRules = rRules.filter(function (rule) {
                         return rule.from.state.equals(mergedState.oldRight) && rule.symbol === lRule.symbol;
                     });
+                    // použijeme kombinace pravidel
                     var _iteratorNormalCompletion5 = true;
                     var _didIteratorError5 = false;
                     var _iteratorError5 = undefined;

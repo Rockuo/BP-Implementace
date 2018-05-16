@@ -39,7 +39,7 @@ var ZERO_PREFIX = '_0_';
 var ONE_PREFIX = '_1_';
 
 /**
- *
+ * Propletení automatů
  * @param  left
  * @param  right
  */
@@ -51,7 +51,9 @@ function interlacement(left, right) {
     left.removeEmptyRules();
     right.removeEmptyRules();
     var rules = [];
+    /** Přidá stavy {0,1}*/
     var decStates = (_decStates = {}, _defineProperty(_decStates, ZERO_PREFIX, new _State2.default({ name: ZERO_PREFIX, isInitial: true, isFinal: true })), _defineProperty(_decStates, ONE_PREFIX, new _State2.default({ name: ONE_PREFIX })), _decStates);
+    /// {0,1}X stavy levého X stavy pravého
 
     var _generateStates = (0, _intersectionFA.generateStates)(decStates, (0, _intersectionFA.generateStates)(left.states, right.states).newStates),
         newStates = _generateStates.newStates,
@@ -70,8 +72,16 @@ function interlacement(left, right) {
     return automata;
 }
 
+/**
+ * Vytvoří pravidla pro inerlacement
+ * @param {FA} left
+ * @param {FA} right
+ * @param {{}}newStates
+ * @return {Array}
+ */
 function createRules(left, right, newStates) {
     var newRules = [];
+    //pro všechny mergnuté stavy ({0,1} X L X R)
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;
     var _iteratorError = undefined;
@@ -80,6 +90,7 @@ function createRules(left, right, newStates) {
         var _loop = function _loop() {
             var newState = _step.value;
 
+            // pokud je v 0 používáme praidla levého stavu
             if (newState.oldLeft.name === ZERO_PREFIX) {
                 var leftRules = left.rules.filter(function (rule) {
                     return rule.from.state.equals(newState.oldRight.oldLeft);
@@ -100,6 +111,7 @@ function createRules(left, right, newStates) {
                             }
                         }));
                     }
+                    // pokud je v 1 používáme praidla pravého stavu
                 } catch (err) {
                     _didIteratorError2 = true;
                     _iteratorError2 = err;

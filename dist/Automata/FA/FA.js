@@ -76,11 +76,16 @@ var FA = function (_Automata) {
             var initialCall = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
             if (initialCall) {
+                // při prvním volání přemaže přechody které se mají ignorovat
+                // tento atribut je zde aby zamezil nekonečným cyklům pomocí epsilon přechodů
                 this._ignoreRules = {};
             }
 
+            // testovaný řetězec je prázdný, nebo sme na jeho konci
             if (!word) {
+                // ktuální stav je koncový => přijímáno
                 if (state.isFinal) return true;
+                // existuje epsilon přechod z aktuálního do koncoého stavu => přijímáno
                 var _iteratorNormalCompletion = true;
                 var _didIteratorError = false;
                 var _iteratorError = undefined;
@@ -91,6 +96,7 @@ var FA = function (_Automata) {
 
                         if (rule.to.state.isFinal) return true;
                     }
+                    // jinak řetězec není přijat
                 } catch (err) {
                     _didIteratorError = true;
                     _iteratorError = err;
@@ -108,9 +114,11 @@ var FA = function (_Automata) {
 
                 return false;
             }
+            // vytáhneme první symbol
             var symbol = word[0];
             word = word.slice(1);
 
+            // pro každý přechod z tohoto stavu pomocí prvního symbolu
             var _iteratorNormalCompletion2 = true;
             var _didIteratorError2 = false;
             var _iteratorError2 = undefined;
@@ -120,13 +128,17 @@ var FA = function (_Automata) {
                     var _rule = _step2.value;
 
                     var ignoreBackup = this._ignoreRules;
-                    this._ignoreRules = {};
+                    this._ignoreRules = {}; // přechod byl použit => vymažeme ignore
                     var result = this.accepts(word, _rule.to.state, false);
+                    //pomocí tohoto přechodu se dostaneme do koncového stavu při zpracování celého řetězce => pijímáno
                     if (result) {
                         return true;
                     }
-                    this._ignoreRules = ignoreBackup;
+                    this._ignoreRules = ignoreBackup; // převidlo nebylo použito, vracíme ignore
                 }
+
+                // žádným přechodem pro tento znak jsme se nedostali do stavu kde by byl řetězec přijímán
+                // => aplikujeme libovolný epsilon přechod
             } catch (err) {
                 _didIteratorError2 = true;
                 _iteratorError2 = err;

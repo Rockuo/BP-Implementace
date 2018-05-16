@@ -65,6 +65,13 @@ function sequentialInserion(left, right) {
     return newAutomata;
 }
 
+/**
+ * Generuje přechody pro sekvenční vkládání
+ * @param {FA} left
+ * @param {FA} right
+ * @param {{}} newStates
+ * @return {Array}
+ */
 function createRules(left, right, newStates) {
     var newRules = [];
     var _iteratorNormalCompletion = true;
@@ -75,6 +82,7 @@ function createRules(left, right, newStates) {
         var _loop = function _loop() {
             var mergedState = _step.value;
 
+            // pravidla levého automatu se přiřazují, jen pokud je pravý v počátečním nebo koncovém stavu
             if (mergedState.oldRight.isFinal || mergedState.oldRight.isInitial) {
                 newRules = left.rules.filter(function (rule) {
                     return rule.from.state.name === mergedState.oldLeft.name;
@@ -87,6 +95,7 @@ function createRules(left, right, newStates) {
                 }).concat(newRules);
             }
 
+            //pravidla pravého se pužijí, pokud pravý není na konci
             if (!mergedState.oldRight.isFinal) {
                 newRules = right.rules.filter(function (rule) {
                     return rule.from.state.name === mergedState.oldRight.name;

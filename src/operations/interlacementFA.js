@@ -12,7 +12,7 @@ const ZERO_PREFIX = '_0_';
 const ONE_PREFIX = '_1_';
 
 /**
- *
+ * Propletení automatů
  * @param  left
  * @param  right
  */
@@ -22,10 +22,12 @@ export default function interlacement(left: FA, right: FA): ?FA {
     left.removeEmptyRules();
     right.removeEmptyRules();
     let rules = [];
+    /** Přidá stavy {0,1}*/
     let decStates = {
         [ZERO_PREFIX]: new State({name: ZERO_PREFIX, isInitial: true, isFinal: true}),
         [ONE_PREFIX]: new State({name: ONE_PREFIX})
     };
+    /// {0,1}X stavy levého X stavy pravého
     let {newStates, newFinals, newInitial} = generateStates(decStates, generateStates(left.states, right.states).newStates);
     let automata = new FA();
     automata.alphabet = new Alphabet(...[...left.alphabet, ...right.alphabet]);
@@ -39,9 +41,18 @@ export default function interlacement(left: FA, right: FA): ?FA {
     return automata;
 }
 
+/**
+ * Vytvoří pravidla pro inerlacement
+ * @param {FA} left
+ * @param {FA} right
+ * @param {{}}newStates
+ * @return {Array}
+ */
 function createRules(left: FA, right: FA,newStates: { [key: string]: MergedState }): Rule[] {
     let newRules = [];
+    //pro všechny mergnuté stavy ({0,1} X L X R)
     for (let newState: MergedState of objectValues(newStates)) {
+        // pokud je v 0 používáme praidla levého stavu
         if (newState.oldLeft.name === ZERO_PREFIX) {
             let leftRules = left.rules.filter((rule: Rule) => rule.from.state.equals(newState.oldRight.oldLeft));
             for (let rule: Rule of leftRules) {
@@ -56,6 +67,7 @@ function createRules(left: FA, right: FA,newStates: { [key: string]: MergedState
                     }
                 }));
             }
+        // pokud je v 1 používáme praidla pravého stavu
         } else {
             let rightRules = right.rules.filter((rule: Rule) => rule.from.state.equals(newState.oldRight.oldRight));
             for (let rule: Rule of rightRules) {

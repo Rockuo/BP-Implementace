@@ -29,6 +29,7 @@ var Alphabet = function (_Array) {
             args[_key] = arguments[_key];
         }
 
+        //...args je ekvivalent pythonáckého *args
         // $FlowFixMe
         return _possibleConstructorReturn(this, (_ref = Alphabet.__proto__ || Object.getPrototypeOf(Alphabet)).call.apply(_ref, [this].concat(_toConsumableArray(new Set(args)))));
     }

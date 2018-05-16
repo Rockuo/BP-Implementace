@@ -1,7 +1,7 @@
-import FA from './src/Automata/FA/FA';
-import sequentialInsertionFA from './src/operations/sequentialInsertionFA';
+const AO = require('../index');
+const logger = require('./__logger');
 
-let simple1 = {
+var simple1 = {
     states: [{name: 'n0'}, {name: 'n1'}, {name: 'n2'}, {name: 'n3'}, {name: 'n4'}],
     alphabet: ['a', 'b'],
     rules: [
@@ -31,7 +31,9 @@ let simple1 = {
 };
 
 
-let simple2 = {
+logger.automataLR(simple1, '(aa)|(bb)');
+
+var simple2 = {
     states: [{name: 'l0'}, {name: 'l1'}, {name: 'l2'}],
     alphabet: ['c', 'd'],
     rules: [
@@ -50,14 +52,11 @@ let simple2 = {
     initialState: {name: 'l0'}
 };
 
+logger.automataLR(simple2,'cd',false);
 
-let automata = sequentialInsertionFA(new FA(simple2), new FA(simple1));
-console.log(automata.accepts('aacd'));
-console.log(automata.accepts('caad'));
-console.log(automata.accepts('cdaa'));
-console.log(automata.accepts('bbcd'));
-console.log(automata.accepts('cbbd'));
-console.log(automata.accepts('cdbb'));
+var automata = AO.operations.concatenationFA(new AO.automata.FA(simple1), new AO.automata.FA(simple2));
+logger.accepts(automata, 'aacd');
+logger.accepts(automata, 'bbcd');
 console.log('----');
-console.log(automata.accepts('acda'));
-console.log(automata.accepts('acad'));
+logger.accepts(automata, 'abcd');
+logger.accepts(automata, 'cdaa');

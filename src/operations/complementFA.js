@@ -11,7 +11,7 @@ import {objectValues} from "../Automata/services/object";
 export default function complement(automata: FA): FA {
     let resAutomata = new FA(toPlain(automata));
 
-    // Odstraníme prázdná pravidla, nedostupné stavy a zavedeme jeden globální uklízecí stav
+    // Odstraníme prázdné přechody, nedostupné stavy a zavedeme jeden globální uklízecí stav
     resAutomata.removeEmptyRules();
     resAutomata.removeUnreachableStates();
     resAutomata.ensureOneTrapState();

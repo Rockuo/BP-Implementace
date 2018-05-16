@@ -41,7 +41,7 @@ function toPlain(automata) {
 }
 
 /**
- * Rozčiřitelná metoda, parsující automat
+ * Rozšířitelná metoda, zpracovávající automat
  * @param automata
  * @param prefix
  * @param stateParser
@@ -60,7 +60,7 @@ function extendableToPlain(automata) {
     var initialState = {},
         finalStates = [],
         alphabet = [].concat(_toConsumableArray(automata.alphabet));
-
+    //zpracuje základní hodnoty sstavů jako jsou initial a final
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;
     var _iteratorError = undefined;
@@ -76,6 +76,7 @@ function extendableToPlain(automata) {
                 finalStates.push({ name: prefix + state.name });
             }
         }
+        // předá zpracování pro stavy a přechody
     } catch (err) {
         _didIteratorError = true;
         _iteratorError = err;
@@ -92,14 +93,13 @@ function extendableToPlain(automata) {
     }
 
     var states = stateParser(automata, prefix);
-
     var rules = ruleParser(automata, prefix);
 
     return { states: states, alphabet: alphabet, initialState: initialState, rules: rules, finalStates: finalStates };
 }
 
 /**
- * Funkce zpracující pravidla Konečného automatu
+ * Funkce zpracující přechody Konečného automatu
  * @param automata
  * @param prefix
  * @return {Array}

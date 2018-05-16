@@ -9,6 +9,7 @@ export type T_RuleNode = {state:State,stackTop?:string};
 type T_Rule_Constructor = { from: T_RuleNode, to: T_RuleNode, symbol: string};
 
 /**
+ * Pravidlo automatu
  * @type {Rule}
  * @property {{state:State, stackTop:string}} from
  * @property {{state:State, stackTop:string}} to

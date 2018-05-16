@@ -32,7 +32,7 @@ export default function shuffle(left: FA, right: FA): ?FA {
 }
 
 /**
- * Generuje pravidla pro Shuffle
+ * Generuje přechody pro Shuffle
  * @param {FA} left
  * @param {FA} right
  * @param {Object<MergedState>} newStates
@@ -40,9 +40,9 @@ export default function shuffle(left: FA, right: FA): ?FA {
  */
 function createRules(left: FA, right: FA, newStates: { [key: string]: MergedState }): Rule[] {
     let newRules = [];
-    //pro každý nový stav generujeme pravidla
+    //pro každý nový stav generujeme přechody
     for (let newState: MergedState of objectValues(newStates)) {
-        //generujeme pravidla z levého automatu
+        //generujeme přechody z levého automatu
         let leftRules = left.rules.filter((rule: Rule) => rule.from.state.name === newState.oldLeft.name);
         for (let rule: Rule of leftRules) {
             newRules.push(new Rule({
@@ -52,7 +52,7 @@ function createRules(left: FA, right: FA, newStates: { [key: string]: MergedStat
             }));
         }
 
-        //generujeme pravidla z pravého automatu
+        //generujeme přechody z pravého automatu
         let rightRules = right.rules.filter((rule: Rule) => rule.from.state.name === newState.oldRight.name);
         for (let rule: Rule of rightRules) {
             newRules.push(new Rule({

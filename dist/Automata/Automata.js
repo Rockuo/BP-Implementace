@@ -37,6 +37,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
+ * Třída reprezentující automat
  * @abstract
  * @type {Automata}
  * @property {{name:State}} states
@@ -55,25 +56,43 @@ var Automata = function () {
     /**
      * @param {T_PlainAutomata} settings
      */
+
+    /** Koncové stavy dle jména*/
+
+    /** Pole pravidel */
+
+    /** Stavy dle jména */
     function Automata(settings) {
         _classCallCheck(this, Automata);
 
+        // tato třída je abstraktní, je li instancializována přímo, => vyjímka
         if (this.constructor.name === 'Automata') {
             throw new _exceptions.AbstractClassException(this.constructor.name);
         }
+        // pokud není dle čeho instancializovat, vytváříme prázdný
         if (settings) {
             this._initFromPlain(settings);
         }
     }
 
     /**
-     * @param {{}} states
-     * @param {{}} alphabet
-     * @param {{}} rules
-     * @param {{}} initialState
-     * @param {{}} finalStates
+     * Overridnutelná metoda pro vytvoření automatu ze zadaného objektu
+     * @param {T_PlainState[]} states
+     * @param {string[]} alphabet
+     * @param {T_PlainRule[]} rules
+     * @param {T_PlainState} initialState
+     * @param {T_PlainState[]} finalStates
      * @private
      */
+
+    /**
+     * Objekt pravidel která se mají ignorovat
+     * @protected
+     */
+
+    /** Počáteční stav*/
+
+    /** Abeceda (unikátní)*/
 
 
     _createClass(Automata, [{
@@ -88,12 +107,13 @@ var Automata = function () {
             this.states = _State2.default.createStates(states);
             this.alphabet = new (Function.prototype.bind.apply(_Alphabet2.default, [null].concat(_toConsumableArray(alphabet))))();
             this.rules = this._createRules(rules, this.states);
-            this.initialState = this._findInitialState(initialState.name);
+            this.initialState = this.states[initialState.name];
+            this.initialState.setAsInitial();
             this.finalStates = this._findFinalStates(finalStates);
         }
 
         /**
-         *
+         * Overridnutelná metoda pro vytvoření pravidel ze zadaného čistého objektu pravidel a stavů
          * @param {array} plainRules
          * @param states
          */
@@ -111,35 +131,20 @@ var Automata = function () {
         }
 
         /**
-         *
-         * @param {string} name
-         */
-
-    }, {
-        key: '_findInitialState',
-        value: function _findInitialState(name) {
-            return (0, _object.objectValues)(this.states).find(function (state) {
-                if (state.name === name) {
-                    state.setAsInitial();
-                    return true;
-                }
-                return false;
-            });
-        }
-
-        /**
-         * Vynutí, aby byl pouze jeden konečný stav
+         * Vynutí, aby byl pouze jeden koncový stav
          */
 
     }, {
         key: 'forceOneFinalState',
         value: function forceOneFinalState() {
+            // vytvoří nový konecný stav
             var newFinalState = new _State2.default({
                 name: 'F-' + (0, _object.objectValues)(this.finalStates).map(function (state) {
                     return state.name;
                 }).join('-'),
                 isFinal: true
             });
+            // všechny původní koncové stavy nastaví jako nekoncové a vytvoří z nich epsilon přechod no nového koncového stavu
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
             var _iteratorError = undefined;
@@ -151,6 +156,7 @@ var Automata = function () {
                     state.isFinal = false;
                     this.rules.push(new _Rule2.default({ from: { state: state }, to: { state: newFinalState }, symbol: '' }));
                 }
+                //přidá koncový stav
             } catch (err) {
                 _didIteratorError = true;
                 _iteratorError = err;
@@ -170,7 +176,8 @@ var Automata = function () {
             this.states[newFinalState.name] = newFinalState;
         }
 
-        /**,
+        /**
+         * Najde reference na koncové stavy dle jejich prosté reprezentace
          * @param {array} finalStates
          * @returns {object}
          * @private
@@ -243,6 +250,12 @@ var Automata = function () {
             this._removeUnattachedRules();
             this.states[this.initialState.name] = this.initialState;
         }
+
+        /**
+         * Odstraní přechody pro která neexistují stavy
+         * @private
+         */
+
     }, {
         key: '_removeUnattachedRules',
         value: function _removeUnattachedRules() {
@@ -285,6 +298,13 @@ var Automata = function () {
 
             this.rules = newRules;
         }
+
+        /**
+         * Odstraní nedostupné stavy
+         * @param {State[]} reachables
+         * @private
+         */
+
     }, {
         key: '_removeUnreachableStates',
         value: function _removeUnreachableStates() {
@@ -330,6 +350,13 @@ var Automata = function () {
                 }
             }
         }
+
+        /**
+         * Odstraní stavy ze kterých není možné se dostat do koncového
+         * @param useful
+         * @private
+         */
+
     }, {
         key: '_removeTrapStates',
         value: function _removeTrapStates(useful) {
@@ -374,6 +401,15 @@ var Automata = function () {
                 }
             }
         }
+
+        /**
+         * Najde přechod ze stavu "from" pomocí symbolu "symbol"
+         * @param {State} from
+         * @param {string} symbol
+         * @return {Rule<>[]}
+         * @private
+         */
+
     }, {
         key: '_findRules',
         value: function _findRules(from) {
@@ -391,17 +427,26 @@ var Automata = function () {
         }
 
         /**
-         * ajistí právě jeden uklízecí stav
+         * Zajistí právě jeden uklízecí stav
          */
 
     }, {
         key: 'ensureOneTrapState',
         value: function ensureOneTrapState() {
+            //odstraní všechny "uklízecí" stavy
             this.removeTrapStates();
+
+            //vytvoří nový "uklízecí stav"
             var cleanState = new _State2.default({
                 name: 'clean(id_' + _State2.default.randomName() + ')'
             });
+            // přidá nový stav
             this.states[cleanState.name] = cleanState;
+
+            /*
+                Pro všechny stavy najdeme symboly pro které neexistují přechody z daného stavu
+                Následě vytvoříme přechody z daného stavu pomocí daného symbolu do nového stavu clean(id_...)
+             */
             var _iteratorNormalCompletion6 = true;
             var _didIteratorError6 = false;
             var _iteratorError6 = undefined;
@@ -440,6 +485,7 @@ var Automata = function () {
                         }
                     }
                 }
+                // pro každý symbol cyklíme v uklízecím stavu
             } catch (err) {
                 _didIteratorError6 = true;
                 _iteratorError6 = err;
@@ -480,6 +526,14 @@ var Automata = function () {
                 }
             }
         }
+
+        /**
+         * Sleduje epsilon přechody z daného stavu a přepisuje je na přechody z cílového stavu epsilon přechodu
+         * (byl-li cílový stav koncový, nastaví tento stav jako koncový)
+         * @param state
+         * @private
+         */
+
     }, {
         key: '_followEmptyRules',
         value: function _followEmptyRules(state) {
@@ -497,9 +551,11 @@ var Automata = function () {
                     var _loop4 = function _loop4() {
                         var emptyRule = _step9.value;
 
+                        //odstraní epsilon přechod
                         _lodash2.default.remove(_this4.rules, function (rule) {
                             return rule.equals(emptyRule);
                         });
+                        //pro všechny přechody z cílového stavu
                         var nextStateRules = _this4._findRules(emptyRule.to.state);
                         var _iteratorNormalCompletion10 = true;
                         var _didIteratorError10 = false;
@@ -509,6 +565,7 @@ var Automata = function () {
                             for (var _iterator10 = nextStateRules[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
                                 var nextStateRule = _step10.value;
 
+                                // se přidají přechody do původního stavu   
                                 _this4.rules.push(new _Rule2.default({
                                     from: { state: state },
                                     symbol: nextStateRule.symbol,
@@ -538,6 +595,7 @@ var Automata = function () {
                     for (var _iterator9 = emptyRules[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
                         _loop4();
                     }
+                    // pokud byly nalezen prázný přechod, hledej znovu v nových přepsaných přechodech
                 } catch (err) {
                     _didIteratorError9 = true;
                     _iteratorError9 = err;
@@ -556,7 +614,7 @@ var Automata = function () {
         }
 
         /**
-         * Odstraní sigma pravidla
+         * Odstraní epsilon přechody
          */
 
     }, {

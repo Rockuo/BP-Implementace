@@ -7,7 +7,12 @@ import MergedState from "../Automata/State/MergedState";
 import Rule from "../Automata/Rule";
 import {objectValues} from "../Automata/services/object";
 
-
+/**
+ * Paralelní vkládání
+ * @param {FA} left
+ * @param {FA} right
+ * @return {FA}
+ */
 export default function parallelInsertion(left: FA, right: FA): FA {
     left = left.clone();
     right = right.clone();
@@ -28,10 +33,17 @@ export default function parallelInsertion(left: FA, right: FA): FA {
     return newAutomata;
 }
 
+/**
+ * Generuje pravidla pro paralelní vkládání
+ * @param left
+ * @param right
+ * @param newStates
+ * @return {Array}
+ */
 function createRules(left: FA, right: FA, newStates: { [key: string]: MergedState }): Rule[] {
     let newRules = [];
     for (let mergedState of objectValues(newStates)) {
-
+        // pokud jsme v koncovém stavu levého automatu, přidáme přechody z levého automatu
         if (mergedState.oldRight.isFinal) {
             newRules = left.rules
                 .filter((rule: Rule) => rule.from.state.name === mergedState.oldLeft.name)
@@ -42,7 +54,7 @@ function createRules(left: FA, right: FA, newStates: { [key: string]: MergedStat
                 }))
                 .concat(newRules);
         }
-
+        // přidáme přechody z pravého automatu
         newRules = right.rules
             .filter((rule: Rule) => rule.from.state.name === mergedState.oldRight.name)
             .map((rule: Rule) => new Rule({

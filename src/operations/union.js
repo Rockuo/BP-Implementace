@@ -76,7 +76,7 @@ function additionalPA(
     // nastavíme
     plainUnion.initialStackSymbol = 'S';
     plainUnion.stackAlphabet = ['S', ...plainLeft.stackAlphabet, ...plainRight.stackAlphabet];
-    // Přidáme pravidla z nového počátečního stavu do původních počátečních stavů
+    // Přidáme přechody z nového počátečního stavu do původních počátečních stavů
     let rules = [
         {
             from: {state: {name: 's' + suffix}, stackTop: 'S'},
@@ -106,7 +106,7 @@ function additionalFA(
     plainUnion: T_AnyPlainAutomata,
     suffix: string
 ) {
-    // Přidáme pravidla z nového počátečního stavu do původních počátečních stavů
+    // Přidáme přechody z nového počátečního stavu do původních počátečních stavů
     let rules = [
         {from: {state: {name: 's' + suffix}}, to: {state: {name: plainLeft.initialState.name}}, symbol: ''},
         {from: {state: {name: 's' + suffix}}, to: {state: {name: plainRight.initialState.name}}, symbol: ''},

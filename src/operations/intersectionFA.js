@@ -16,6 +16,7 @@ import {objectValues} from "../Automata/services/object";
 export default function intersectionFA(left: FA, right: FA): FA {
     left = left.clone();
     right = right.clone();
+    //odstraníme prázdné přechody aabychom na ně nemuseli brát ohled
     left.removeEmptyRules();
     right.removeEmptyRules();
 
@@ -32,6 +33,12 @@ export default function intersectionFA(left: FA, right: FA): FA {
     return newAutomata;
 }
 
+/**
+ * Zkombinuje stavy levého a pravého automatu L X Y (karézský součin)
+ * @param lStates
+ * @param rStates
+ * @return {{newStates, newFinals, newInitial: *, statesByLeft, statesByRight}}
+ */
 export function generateStates(lStates: { [key: string]: State }, rStates: { [key: string]: State }): {
     newStates: { [key: string]: MergedState },
     statesByLeft: { [key: string]: MergedState },
@@ -53,16 +60,26 @@ export function generateStates(lStates: { [key: string]: State }, rStates: { [ke
     return {newStates, newFinals, newInitial, statesByLeft, statesByRight};
 }
 
+/**
+ * VYgeneruje pravidla pro průnik
+ * @param left
+ * @param right
+ * @param newStates
+ * @return {Array}
+ */
 function generateRules(left: FA, right: FA, newStates:{ [key: string]: MergedState }): Rule[] {
     let lRules = left.rules, rRules = right.rules;
 
     let newRules = [];
     for (let mergedState: MergedState of objectValues(newStates)) {
+        // filtr na přechody levého automatu
         let filteredLRules= lRules.filter((rule:Rule) => rule.from.state.equals(mergedState.oldLeft));
         for (let lRule of filteredLRules) {
+            // filtr na přechody pravého automatu
             let filteredRRules = rRules.filter((rule:Rule) => {
                 return rule.from.state.equals(mergedState.oldRight) && rule.symbol === lRule.symbol;
             });
+            // použijeme kombinace pravidel
             for (let rRule of filteredRRules) {
                 newRules.push(new Rule({
                     from:{state:mergedState},

@@ -18,7 +18,7 @@ export function toPlain(automata: FA, prefix: string = ''): T_PlainAutomata {
 }
 
 /**
- * Rozčiřitelná metoda, parsující automat
+ * Rozšířitelná metoda, zpracovávající automat
  * @param automata
  * @param prefix
  * @param stateParser
@@ -28,7 +28,7 @@ export function toPlain(automata: FA, prefix: string = ''): T_PlainAutomata {
 //$FlowFixMe
 export function extendableToPlain(automata: FA, prefix: string = '', {stateParser = plainAutomataState, ruleParser = plainAutomataRule}) {
     let initialState = {}, finalStates = [], alphabet = [...automata.alphabet];
-
+    //zpracuje základní hodnoty sstavů jako jsou initial a final
     for (let state:State of objectValues(automata.states)){
         if (state.isInitial) {
             initialState.name = prefix + state.name;
@@ -37,15 +37,15 @@ export function extendableToPlain(automata: FA, prefix: string = '', {stateParse
             finalStates.push({name: prefix + state.name});
         }
     }
+    // předá zpracování pro stavy a přechody
     let states = stateParser(automata, prefix);
-
     let rules = ruleParser(automata, prefix);
 
     return {states, alphabet, initialState, rules, finalStates};
 }
 
 /**
- * Funkce zpracující pravidla Konečného automatu
+ * Funkce zpracující přechody Konečného automatu
  * @param automata
  * @param prefix
  * @return {Array}

@@ -1,9 +1,9 @@
 //@flow
-import _ from 'lodash';
 
 export type T_PlainState = { name: string }
 
 /**
+ * Stav automatu
  * @type {State}
  * @property {string} name
  * @property {boolean} isInitial
@@ -25,6 +25,7 @@ export default class State {
     }
 
     /**
+     * Přijímá čistý objekt stavu a vrací instanci State
      * @param {object} plainStates
      */
     static createStates(plainStates: T_PlainState[]): { [key: string]: State } {

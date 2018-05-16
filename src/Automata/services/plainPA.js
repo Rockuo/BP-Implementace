@@ -3,8 +3,6 @@ import PA from "../PA/PA";
 import type {T_PlainPA} from "../PA/PA";
 import Automata from "../Automata";
 import {extendableToPlain} from "./plainFA";
-import _ from 'lodash';
-
 
 
 /**

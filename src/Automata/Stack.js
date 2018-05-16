@@ -1,6 +1,7 @@
 //@flow
 
 /**
+ * Zásobník automatu
  * @type {Stack}
  * @property {string[]} stack
  */

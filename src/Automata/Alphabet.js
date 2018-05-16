@@ -5,7 +5,7 @@
  */
 export default class Alphabet extends Array{
     // $FlowFixMe
-    constructor(...args) {
+    constructor(...args) { //...args je ekvivalent pythonáckého *args
         // $FlowFixMe
         super(...(new Set(args)));
     }

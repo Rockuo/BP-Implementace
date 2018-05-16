@@ -24,7 +24,7 @@ var _FA2 = _interopRequireDefault(_FA);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
- *
+ * Operace Different
  * @param  left
  * @param  right
  */

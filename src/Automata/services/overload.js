@@ -12,15 +12,18 @@ export function overload(options) {
     for (let option of options) {
         let paramsToUse = [];
         for (let param of option.parameters) {
+            //pokud zadaný typ pro přetečení neodpovídá
             if(param.value.constructor !== param.type) {
-                continue optionEach;
+                continue optionEach; // continue pro hlavní cyklus
             }
             let val  = param.value;
 
             val = (val: param.type);
             paramsToUse.push(val);
         }
+        // odpovídají datové typy, voláme callback
         return option.func(...paramsToUse);
     }
+    //nebylo nalezeno přetečení
     throw new OverloadException();
 }

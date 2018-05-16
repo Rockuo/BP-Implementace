@@ -23,7 +23,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function complement(automata) {
     var resAutomata = new _FA2.default((0, _plainFA.toPlain)(automata));
 
-    // Odstraníme prázdná pravidla, nedostupné stavy a zavedeme jeden globální uklízecí stav
+    // Odstraníme prázdné přechody, nedostupné stavy a zavedeme jeden globální uklízecí stav
     resAutomata.removeEmptyRules();
     resAutomata.removeUnreachableStates();
     resAutomata.ensureOneTrapState();

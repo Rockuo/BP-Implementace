@@ -38,6 +38,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+/**
+ * Pop zprava
+ * Operace dělá obdobnou práci jako sekvenční mazání, až na to, že při hledání průniků jsou hledány jen ty kde
+ * dotyčná část levého automatu končí v koncovém stavu
+ * @param {FA} left
+ * @param {FA} right
+ * @param {string} specialSymbol
+ * @return {FA}
+ */
 function rPop(left, right) {
     var specialSymbol = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '#';
 
@@ -118,6 +127,15 @@ function rPop(left, right) {
     return (0, _sequentialDeletionFA.specialRulesToResultAutomata)(left, right, specialSymbol);
 }
 
+/**
+ * Pop zleva
+ * Operace dělá obdobnou práci jako sekvenční mazání, až na to, že při hledání průniků jsou hledány jen ty kde
+ * dotyčná část levého automatu začíná v počátečním stavu
+ * @param {FA} left
+ * @param {FA} right
+ * @param {string} specialSymbol
+ * @return {FA}
+ */
 function lPop(left, right) {
     var specialSymbol = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '#';
 
